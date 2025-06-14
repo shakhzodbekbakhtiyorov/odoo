@@ -1,5 +1,5 @@
 import { expect, getFixture, test } from "@odoo/hoot";
-import { queryOne, scroll } from "@odoo/hoot-dom";
+import { queryOne, scroll, waitFor } from "@odoo/hoot-dom";
 import { animationFrame, Deferred } from "@odoo/hoot-mock";
 import { Component, onWillStart, xml } from "@odoo/owl";
 import {
@@ -46,7 +46,7 @@ class Partner extends models.Model {
         { id: 5, display_name: "Fifth record", o2m: [] },
     ];
     _views = {
-        "form,false": `
+        form: `
             <form>
                 <header>
                     <button name="object" string="Call method" type="object"/>
@@ -64,9 +64,8 @@ class Partner extends models.Model {
                     </t>
                 </templates>
             </kanban>`,
-        "list,false": `<list><field name="display_name"/></list>`,
+        list: `<list><field name="display_name"/></list>`,
         "list,2": `<list limit="3"><field name="display_name"/></list>`,
-        "search,false": `<search/>`,
     };
 }
 
@@ -79,9 +78,8 @@ class Pony extends models.Model {
         { id: 9, name: "Fluttershy" },
     ];
     _views = {
-        "list,false": '<list><field name="name"/></list>',
-        "form,false": `<form><field name="name"/></form>`,
-        "search,false": `<search/>`,
+        list: '<list><field name="name"/></list>',
+        form: `<form><field name="name"/></form>`,
     };
 }
 
@@ -325,12 +323,17 @@ test("action cache: additionalContext is used on the key", async () => {
     expect(action.context).toEqual(actionParams);
 });
 
+test.tags("desktop");
 test('action with "no_breadcrumbs" set to true', async () => {
     defineActions([
         {
             id: 42,
             res_model: "partner",
-            views: [[1, "kanban"]],
+            type: "ir.actions.act_window",
+            views: [
+                [1, "kanban"],
+                [false, "list"],
+            ],
             context: { no_breadcrumbs: true },
         },
     ]);
@@ -339,6 +342,10 @@ test('action with "no_breadcrumbs" set to true', async () => {
     expect(".o_breadcrumb").toHaveCount(1);
     // push another action flagged with 'no_breadcrumbs=true'
     await getService("action").doAction(42);
+    await waitFor(".o_kanban_view");
+    expect(".o_breadcrumb").toHaveCount(0);
+    await contains(".o_switch_view.o_list").click();
+    await waitFor(".o_list_view");
     expect(".o_breadcrumb").toHaveCount(0);
 });
 
@@ -494,7 +501,7 @@ test("stores and restores scroll position (in list)", async () => {
 
 test.tags("desktop");
 test('executing an action with target != "new" closes all dialogs', async () => {
-    Partner._views["form,false"] = `
+    Partner._views["form"] = `
         <form>
             <field name="o2m">
                 <list><field name="display_name"/></list>
@@ -515,7 +522,7 @@ test('executing an action with target != "new" closes all dialogs', async () => 
 
 test.tags("desktop");
 test('executing an action with target "new" does not close dialogs', async () => {
-    Partner._views["form,false"] = `
+    Partner._views["form"] = `
         <form>
             <field name="o2m">
                 <list><field name="display_name"/></list>
@@ -536,8 +543,6 @@ test('executing an action with target "new" does not close dialogs', async () =>
 test.tags("desktop");
 test("search defaults are removed from context when switching view", async () => {
     expect.assertions(1);
-    Partner._views["pivot,false"] = `<pivot/>`;
-    Partner._views["list,false"] = `<list/>`;
     const context = {
         search_default_x: true,
         searchpanel_default_y: true,

@@ -726,7 +726,7 @@ msgstr "輸入名稱，然後選擇類別並配置費用金額。"
 #: model_terms:ir.ui.view,arch_db:hr_expense.hr_expense_view_search
 #: model_terms:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_form
 msgid "Expense"
-msgstr "費用"
+msgstr "開支"
 
 #. module: hr_expense
 #: model:mail.activity.type,name:hr_expense.mail_act_expense_approval
@@ -923,7 +923,7 @@ msgstr "費用分拆"
 #: model_terms:ir.ui.view,arch_db:hr_expense.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:hr_expense.view_hr_expense_sheet_form
 msgid "Expenses"
-msgstr "費用"
+msgstr "開支"
 
 #. module: hr_expense
 #: model:ir.actions.act_window,name:hr_expense.hr_expense_actions_all
@@ -1500,7 +1500,7 @@ msgstr "你的<b>開支報表</b>準備就緒後，您可以將其提交給經�
 #. odoo-python
 #: code:addons/hr_expense/models/hr_expense_sheet.py:0
 msgid "Only HR Officers or the concerned employee can reset to draft."
-msgstr "只有人力資源人員或相關員工可以重置為草稿。"
+msgstr "只限人力資源職員或相關員工，才可重設為草稿。"
 
 #. module: hr_expense
 #. odoo-javascript

@@ -9,15 +9,15 @@
 # Pilar Vargas, 2024
 # Suresh, 2024
 # jabiri7, 2025
-# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2025
 # Wil Odoo, 2025
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2025
 # Larissa Manderfeld, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
+"POT-Creation-Date: 2025-06-06 18:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Larissa Manderfeld, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/odoo/teams/41243/es/)\n"
@@ -217,6 +217,18 @@ msgstr "%(ref)s (%(currency_amount)s)"
 #: code:addons/account/models/account_account_tag.py:0
 msgid "%(tag)s (%(country_code)s)"
 msgstr "%(tag)s (%(country_code)s)"
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_tax.py:0
+msgid ""
+"%(tax_account)s (%(account_name)s) should be an account of type "
+"\"%(receivable)s\" or \"%(payable)s\" with both options "
+"\"%(allow_reconciliation)s\" and \"%(non_trade)s\" enabled."
+msgstr ""
+"La cuenta %(tax_account)s (%(account_name)s) debe ser de tipo "
+"“%(receivable)s” o “%(payable)s” con ambas opciones activadas "
+"“%(allow_reconciliation)s” o “%(non_trade)s”."
 
 #. module: account
 #. odoo-python
@@ -1380,6 +1392,11 @@ msgstr "<span>Advertencia: este documento podría ser un duplicado de</span>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong class=\"d-block mt-3\">Shipping Address</strong>"
+msgstr "<strong class=\"d-block mt-3\">Dirección de envío</strong>"
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong class=\"mr16\">Subtotal</strong>"
 msgstr "<strong class=\"mr16\">Subtotal</strong>"
 
@@ -1445,11 +1462,6 @@ msgstr "<strong>Referencia</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
-msgid "<strong>Shipping Address</strong>"
-msgstr "<strong>Dirección de envío</strong>"
-
-#. module: account
-#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong>Source</strong>"
 msgstr "<strong>Origen</strong>"
 
@@ -1483,6 +1495,15 @@ msgstr "<strong>Total</strong>"
 #: model_terms:ir.ui.view,arch_db:account.view_account_account_kanban
 msgid "<strong>Type: </strong>"
 msgstr "<strong>Tipo: </strong>"
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
+msgid ""
+"<strong>Warning:</strong> Once the Audit Trail is enabled, it cannot be "
+"disabled again if there are any existing journal items."
+msgstr ""
+"<strong>Advertencia:</strong> Una vez que haya activado la pista de "
+"auditoría, no podrá desactivarla si ya existen apuntes contables."
 
 #. module: account
 #. odoo-python
@@ -1520,6 +1541,16 @@ msgstr ""
 #: code:addons/account/models/res_partner_bank.py:0
 msgid "A bank account can belong to only one journal."
 msgstr "Una cuenta bancaria sólo puede pertenecer a un diario."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/res_partner_bank.py:0
+msgid ""
+"A bank account with Account Number %(number)s already exists for Partner "
+"%(partner)s, but is archived. Please unarchive it instead."
+msgstr ""
+"Ya existe una cuenta bancaria con el número de cuenta %(number)s para el "
+"contacto %(partner)s, pero está archivada. Desarchívela."
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_bank_statement_tree
@@ -3534,8 +3565,8 @@ msgstr "Cuenta bancaria"
 #. module: account
 #. odoo-python
 #: code:addons/account/models/res_partner_bank.py:0
-msgid "Bank Account %(link)s with number %(number)s deleted"
-msgstr "Cuenta bancaria %(link)s con número %(number)s eliminada"
+msgid "Bank Account %(link)s with number %(number)s archived"
+msgstr "Se ha archivado la cuenta bancaria %(link)s con el número %(number)s"
 
 #. module: account
 #. odoo-python
@@ -3866,7 +3897,7 @@ msgstr "Referencia de factura"
 #: model_terms:ir.ui.view,arch_db:account.view_account_bill_filter
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_payment_filter
 msgid "Bills"
-msgstr "Facturas"
+msgstr "Facturas de proveedores"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_journal_dashboard_kanban_view
@@ -4137,6 +4168,12 @@ msgid ""
 msgstr ""
 "No se pueden obtener detalles de agregación de una línea que no esté usando "
 "el motor de \"agregación\""
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_move_send.py:0
+msgid "Cannot identify the invoices in the generated PDF: %s"
+msgstr "No es posible identificar facturas en el archivo PDF generado: %s"
 
 #. module: account
 #: model:account.account,name:account.1_capital
@@ -4632,6 +4669,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.account_move_view_activity
 msgid "Commercial Entity"
 msgstr "Entidad comercial"
+
+#. module: account
+#: model:ir.model.fields,field_description:account.field_account_move_line__commercial_partner_country
+msgid "Commercial Partner Country"
+msgstr "País del socio comercial"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__invoice_reference_model
@@ -7785,7 +7827,7 @@ msgstr "De la etiqueta"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_analytic_line_filter_inherit_account
 msgid "From last fiscal year"
-msgstr ""
+msgstr "Del ejercicio fiscal anterior"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_report_expression__date_scope__previous_tax_period
@@ -8445,9 +8487,9 @@ msgid ""
 "must charge VAT based on the delivery address. This rule applies regardless "
 "of where you are located."
 msgstr ""
-"Si vende productos y servicios a clientes en un país extranjero en la UE, "
-"debe cobrar IVA según la dirección de entrega. Esta regla aplica sin "
-"importar dónde esté ubicado."
+"Si vende productos y servicios a clientes en un país fuera de la UE, debe "
+"cobrar el IVA en función de la dirección de entrega. Esta regla aplica sin "
+"importar dónde se encuentra usted."
 
 #. module: account
 #. odoo-python
@@ -9185,7 +9227,7 @@ msgstr "Facturado"
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_graph
 #: model_terms:ir.ui.view,arch_db:account.view_invoice_tree
 msgid "Invoices"
-msgstr "Facturas"
+msgstr "Facturas de clientes"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.portal_my_home_menu_invoice
@@ -9470,6 +9512,12 @@ msgstr "Parece que hay un asiento de cierre a publicar"
 #: code:addons/account/models/account_move.py:0
 msgid "It was previously '%(previous)s' and it is now '%(current)s'."
 msgstr "Anteriormente era \"%(previous)s\" y ahora es \"%(current)s\"."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_move_line.py:0
+msgid "Items With Missing Analytic Distribution"
+msgstr "Apuntes sin distribución analítica"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__res_company__fiscalyear_last_month__1
@@ -11347,6 +11395,12 @@ msgid "One or more invoices couldn't be processed."
 msgstr "No se han podido procesar una o varias facturas."
 
 #. module: account
+#. odoo-python
+#: code:addons/account/models/account_move_line.py:0
+msgid "One or more lines require a 100% analytic distribution."
+msgstr "Una o más líneas requieren una distribución analítica del 100 %."
+
+#. module: account
 #: model:ir.ui.menu,name:account.root_payment_menu
 msgid "Online Payments"
 msgstr "Pagos en línea"
@@ -11397,7 +11451,7 @@ msgstr ""
 #: code:addons/account/models/account_move.py:0
 msgid "Only posted/cancelled journal entries can be reset to draft."
 msgstr ""
-"Solo se pueden reestablecer a borrador los asientos publicados o cancelados."
+"Solo se pueden restablecer a borrador los asientos publicados o cancelados."
 
 #. module: account
 #. odoo-python
@@ -11754,7 +11808,7 @@ msgstr "Paquete"
 #: model:mail.message.subtype,name:account.mt_invoice_paid
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "Paid"
-msgstr "Pagada"
+msgstr "Pagado"
 
 #. module: account
 #. odoo-python
@@ -11845,7 +11899,7 @@ msgstr "Empresa"
 #: model:ir.model.fields,field_description:account.field_res_partner__partner_company_registry_placeholder
 #: model:ir.model.fields,field_description:account.field_res_users__partner_company_registry_placeholder
 msgid "Partner Company Registry Placeholder"
-msgstr ""
+msgstr "Marcador de posición del registro de la compañía para contactos"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_partner__contract_ids
@@ -13793,6 +13847,12 @@ msgid "See all activities"
 msgstr "Ver todas las actividades"
 
 #. module: account
+#. odoo-python
+#: code:addons/account/models/account_move_line.py:0
+msgid "See items"
+msgstr "Ver apuntes"
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_analytic_distribution_model__product_categ_id
 msgid ""
 "Select a product category which will use analytic account specified in "
@@ -14430,7 +14490,7 @@ msgstr "Saldo inicial"
 #: model:ir.model.fields,field_description:account.field_account_payment__state
 #: model_terms:ir.ui.view,arch_db:account.res_company_form_view_onboarding
 msgid "State"
-msgstr "Provincia"
+msgstr "Estado"
 
 #. module: account
 #: model:ir.actions.report,name:account.action_report_account_statement
@@ -15453,6 +15513,15 @@ msgid ""
 msgstr ""
 "La combinación de modelo de referencia y tipo de referencia en el diario no "
 "se ha implementado"
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/partner.py:0
+msgid ""
+"The commercial partner has been updated for all related accounting entries."
+msgstr ""
+"Se ha actualizado el socio comercial para todos los asientos contables "
+"relacionados."
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_tax_repartition_line__company_id
@@ -16591,7 +16660,7 @@ msgstr "Este asiento se ha duplicado a partir de %s"
 #. odoo-python
 #: code:addons/account/models/account_move.py:0
 msgid "This entry has been reversed from %s"
-msgstr "Este asiento se ha revirtido apartir de %s"
+msgstr "Este asiento se ha revertido a partir de %s"
 
 #. module: account
 #. odoo-python
@@ -17003,7 +17072,7 @@ msgstr "Total residual en moneda"
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_total_signed
 #: model:ir.model.fields,field_description:account.field_account_move__amount_total_signed
 msgid "Total Signed"
-msgstr "Total firmado"
+msgstr "Total con signo"
 
 #. module: account
 #. odoo-python
@@ -17077,7 +17146,7 @@ msgstr "Total en moneda"
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_total_in_currency_signed
 #: model:ir.model.fields,field_description:account.field_account_move__amount_total_in_currency_signed
 msgid "Total in Currency Signed"
-msgstr "Total firmado en moneda"
+msgstr "Total con signo en moneda"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
@@ -18096,6 +18165,11 @@ msgid "Wrong credit or debit value in accounting entry!"
 msgstr "¡Valor de crédito o débito incorrecto en el asiento contable!"
 
 #. module: account
+#: model_terms:ir.ui.view,arch_db:account.view_partner_property_form
+msgid "XML format"
+msgstr "Formato XML"
+
+#. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_move__auto_post__yearly
 msgid "Yearly"
 msgstr "Anualmente"
@@ -18700,10 +18774,8 @@ msgstr "No puede registrar pagos para asientos varios."
 #. module: account
 #. odoo-python
 #: code:addons/account/models/mail_message.py:0
-msgid ""
-"You cannot remove parts of the audit trail. Archive the record instead."
-msgstr ""
-"No puede eliminar partes de la pista de auditoría. Archive el registro."
+msgid "You cannot remove parts of the audit trail."
+msgstr "No puede eliminar partes de la pista de auditoría."
 
 #. module: account
 #. odoo-python
@@ -18763,6 +18835,16 @@ msgid ""
 msgstr ""
 "No puede establecer una moneda en esta cuenta porque ya tiene algunos "
 "asientos que tienen una moneda diferente."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/partner.py:0
+msgid ""
+"You cannot set a partner as an invoicing address of another if they have a "
+"different %(vat_label)s."
+msgstr ""
+"No puede establecer un contacto como dirección de facturación de otro si "
+"tienen un %(vat_label)s diferente."
 
 #. module: account
 #. odoo-python

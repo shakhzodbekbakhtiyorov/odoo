@@ -75,8 +75,8 @@
                                     <button data-color="white" class="o_color_button btn bg-white"></button>
                                 </div>
                                 <Colorpicker
-                                    defaultColor="this.defaultColor"
-                                    onColorSelect.bind="(color) => this.applyColor(color.hex)"
+                                    defaultColor="this.currentCustomColor.color"
+                                    onColorSelect.bind="(color) => this.applyColor(color.cssColor)"
                                     onColorPreview.bind="onColorPreview" />
                             </div>
                         </t>

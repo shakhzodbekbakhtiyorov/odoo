@@ -4918,6 +4918,8 @@ class TestMrpOrder(TestMrpCommon):
         """
         Test updating an MO from BoM when the finished product has a kit with variants as a component.
         """
+        # Enable variants
+        self.env.user.groups_id += self.env.ref('product.group_product_variant')
         # Create an attribute for variants
         color_attribute = self.env['product.attribute'].create({
             'name': 'Variant Color',
@@ -5215,6 +5217,27 @@ class TestMrpOrder(TestMrpCommon):
         wos_to_set = mo.workorder_ids - mo.workorder_ids[1]
         wos_to_set.write({ 'date_start': date_start, 'date_finished': date_finished })
         self.assertTrue(mo.workorder_ids[-1].show_json_popover)
+
+    def test_product_qty_digits_precision(self):
+        self.env['decimal.precision'].search([('name', '=', 'Product Unit of Measure')]).digits = 5
+        self.bom_1.product_uom_id.rounding = 0.00001
+        mo = self.env['mrp.production'].create({
+            'bom_id': self.bom_1.id,
+            'product_qty': 1.23456,
+        })
+        mo.action_confirm()
+        self.assertEqual(mo.product_qty, 1.23456)
+        mo.button_mark_done()
+        self.assertEqual(mo.state, 'done')
+        # unbuild the MO
+        unbuild_form = Form(self.env['mrp.unbuild'])
+        unbuild_form.product_id = self.bom_1.product_id
+        unbuild_form.product_qty = 1.23456
+        unbuild_form.mo_id = mo
+        unbuild_order = unbuild_form.save()
+        unbuild_order.action_unbuild()
+        self.assertEqual(unbuild_order.state, 'done')
+        self.assertEqual(unbuild_order.product_qty, 1.23456)
 
 
 @tagged('-at_install', 'post_install')

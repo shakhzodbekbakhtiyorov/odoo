@@ -4,9 +4,9 @@
 
 from datetime import datetime, date, time
 from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 from odoo import api, fields, models, _
-from odoo.addons.resource.models.utils import HOURS_PER_DAY
 from odoo.addons.hr_holidays.models.hr_leave import get_employee_from_context
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_round
@@ -201,9 +201,11 @@ class HolidaysAllocation(models.Model):
         for allocation in self:
             allocation.number_of_days_display = allocation.number_of_days
 
-    @api.depends('number_of_days')
+    @api.depends('number_of_days', 'employee_id')
     def _compute_number_of_hours_display(self):
         for allocation in self:
+            if not allocation.employee_id:
+                continue
             allocation.number_of_hours_display = (allocation.number_of_days * allocation.employee_id._get_hours_per_day(allocation.date_from))
 
     @api.depends('number_of_hours_display', 'number_of_days_display')
@@ -303,7 +305,9 @@ class HolidaysAllocation(models.Model):
         elif carryover_time == 'allocation':
             carryover_date = date(date_from.year, self.date_from.month, self.date_from.day)
         else:
-            carryover_date = date(date_from.year, MONTHS_TO_INTEGER[accrual_plan.carryover_month], accrual_plan.carryover_day)
+            max_day = monthrange(date_from.year, MONTHS_TO_INTEGER[accrual_plan.carryover_month])[1]
+            day = min(accrual_plan.carryover_day, max_day)
+            carryover_date = date(date_from.year, MONTHS_TO_INTEGER[accrual_plan.carryover_month], day)
         if date_from > carryover_date:
             carryover_date += relativedelta(years=1)
         return carryover_date
@@ -657,6 +661,7 @@ class HolidaysAllocation(models.Model):
             if not allocation.lastcall:
                 if not current_level:
                     allocation.lastcall = today
+                    allocation.actual_lastcall = allocation.lastcall
                     continue
                 allocation.lastcall = max(
                     current_level._get_previous_date(today),

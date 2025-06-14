@@ -265,7 +265,7 @@ class HrEmployeeBase(models.AbstractModel):
             employee.hr_icon_display = 'presence_' + employee.hr_presence_state
             employee.show_hr_icon_display = bool(employee.user_id)
 
-    @api.depends('resource_calendar_id')
+    @api.depends('resource_calendar_id.flexible_hours')
     def _compute_is_flexible(self):
         for employee in self:
             employee.is_fully_flexible = not employee.resource_calendar_id
@@ -306,3 +306,6 @@ class HrEmployeeBase(models.AbstractModel):
             calendar = employee.resource_calendar_id or employee.company_id.resource_calendar_id
             calendar_periods_by_employee[employee] = [(start, stop, calendar)]
         return calendar_periods_by_employee
+
+    def get_avatar_card_data(self, fields):
+        return self._read_format(fields)

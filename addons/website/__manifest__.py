@@ -11,6 +11,7 @@
         'digest',
         'web',
         'web_editor',
+        'html_editor',
         'http_routing',
         'portal',
         'social_media',
@@ -191,6 +192,7 @@
     'assets': {
         'web.assets_frontend': [
             ('replace', 'web/static/src/legacy/js/public/public_root_instance.js', 'website/static/src/js/content/website_root_instance.js'),
+            'website/static/src/core/errors/beforeunload_error_handler.js',
             'website/static/src/libs/zoomodoo/zoomodoo.scss',
             'website/static/src/scss/website.scss',
             'website/static/src/scss/website_controller_page.scss',
@@ -282,6 +284,9 @@
         'web.qunit_suite_tests': [
             'website/static/tests/redirect_field_tests.js',
         ],
+        'web.assets_unit_tests': [
+            'website/static/tests/website_html_editor.test.js',
+        ],
         'web.tests_assets': [
             'website/static/tests/website_service_mock.js',
         ],
@@ -293,6 +298,10 @@
             'website/static/src/xml/web_editor.xml',
             'website/static/src/js/editor/add_snippet_dialog.js',
             'website/static/src/js/editor/widget_link.js',
+        ],
+        'html_editor.assets_link_popover': [
+            'website/static/src/js/editor/html_editor.js',
+            'website/static/src/xml/html_editor.xml',
         ],
         'website.assets_wysiwyg': [
             ('include', 'web._assets_helpers'),

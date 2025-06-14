@@ -444,6 +444,12 @@ class Meeting(models.Model):
                     ),
                 )
 
+    def _check_organizer_validation_conditions(self, vals_list):
+        """ Method for check in the microsoft_calendar module that needs to be
+            overridden in appointment.
+        """
+        return [True] * len(vals_list)
+
     @api.depends('recurrence_id', 'recurrency')
     def _compute_rrule_type_ui(self):
         defaults = self.env["calendar.recurrence"].default_get(["interval", "rrule_type"])
@@ -911,6 +917,22 @@ class Meeting(models.Model):
             '|', '|', '|', ('privacy', '=', 'public'), ('privacy', '=', 'confidential'), ('user_id', '=', self.env.user.id),
             '&', ('privacy', '=', False), ('user_id.res_users_settings_id', 'in', public_calendars_settings)
         ]
+
+    def _is_event_over(self):
+        """Check if the event is over. This method is used to check if the event
+        should trigger invitations with Google Calendar.
+        :return: True if the event is over, False otherwise
+        """
+        self.ensure_one()
+        now = fields.Datetime.now()
+        today = fields.Date.today()
+
+        # For all-day events
+        if self.allday:
+            return self.stop_date and self.stop_date < today
+
+        # For timed events
+        return self.stop and self.stop < now
 
     # ------------------------------------------------------------
     # ACTIONS

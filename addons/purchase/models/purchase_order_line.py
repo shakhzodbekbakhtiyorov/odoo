@@ -226,7 +226,7 @@ class PurchaseOrderLine(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_purchase_or_done(self):
         for line in self:
-            if line.order_id.state in ['purchase', 'done']:
+            if line.order_id.state in ['purchase', 'done'] and line.display_type not in ['line_note', 'line_section']:
                 state_description = {state_desc[0]: state_desc[1] for state_desc in self._fields['state']._description_selection(self.env)}
                 raise UserError(_('Cannot delete a purchase order line which is in state “%s”.', state_description.get(line.state)))
 
@@ -565,8 +565,6 @@ class PurchaseOrderLine(models.Model):
             'purchase_line_id': self.id,
             'is_downpayment': self.is_downpayment,
         }
-        if self.analytic_distribution and not self.display_type:
-            res['analytic_distribution'] = self.analytic_distribution
         return res
 
     @api.model
@@ -598,9 +596,8 @@ class PurchaseOrderLine(models.Model):
         product_taxes = product_id.supplier_taxes_id.filtered(lambda x: x.company_id in company_id.parent_ids)
         taxes = po.fiscal_position_id.map_tax(product_taxes)
 
-        price_unit = seller.price if seller else product_id.standard_price
         price_unit = self.env['account.tax']._fix_tax_included_price_company(
-            price_unit, product_taxes, taxes, company_id)
+            seller.price, product_taxes, taxes, company_id) if seller else 0
         if price_unit and seller and po.currency_id and seller.currency_id != po.currency_id:
             price_unit = seller.currency_id._convert(
                 price_unit, po.currency_id, po.company_id, po.date_order or fields.Date.today())

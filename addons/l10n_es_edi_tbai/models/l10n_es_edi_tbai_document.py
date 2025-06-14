@@ -11,7 +11,7 @@ from pytz import timezone
 from requests.exceptions import RequestException
 
 from odoo import _, api, fields, models, release
-from odoo.addons.l10n_es_edi_sii.models.account_edi_format import PatchedHTTPAdapter
+from odoo.addons.certificate.tools import CertificateAdapter
 from odoo.addons.l10n_es_edi_tbai.models.l10n_es_edi_tbai_agencies import get_key
 from odoo.addons.l10n_es_edi_tbai.models.xml_utils import (
     NS_MAP,
@@ -112,7 +112,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         if not self.company_id.vat:
             return _("Please configure the Tax ID on your company for TicketBAI.")
 
-        if self.company_id._l10n_es_freelancer() and not self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', False):
+        if self.company_id.l10n_es_tbai_tax_agency == 'bizkaia' and self.company_id._l10n_es_freelancer() and not self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', False):
             return _("In order to use Ticketbai Batuz for freelancers, you will need to configure the "
                         "Epigrafe or Main Activity.  In this version, you need to go in debug mode to "
                         "Settings > Technical > System Parameters and set the parameter 'l10n_es_edi_tbai.epigrafe'"
@@ -190,7 +190,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         def _send_request_to_agency(*args, **kwargs):
             session = requests.Session()
             session.cert = kwargs.pop('pkcs12_data')
-            session.mount("https://", PatchedHTTPAdapter())
+            session.mount("https://", CertificateAdapter())
             response = session.request('post', *args, **kwargs)
             response.raise_for_status()
             response_xml = None
@@ -218,9 +218,9 @@ class L10nEsEdiTbaiDocument(models.Model):
                 error_code = response_headers['eus-bizkaia-n3-codigo-respuesta']
                 error_msg = response_headers['eus-bizkaia-n3-mensaje-respuesta']
                 errors.append(error_code + ": " + error_msg)
-            if errors:
-                return False, errors
-            return self._process_post_response_xml_bi(env, response_xml)
+            success, errors_add = self._process_post_response_xml_bi(env, response_xml)
+            errors += errors_add
+            return success, errors
 
     def _prepare_post_params_ar_gi(self):
         """Web service parameters for Araba and Gipuzkoa."""
@@ -296,6 +296,7 @@ class L10nEsEdiTbaiDocument(models.Model):
             'sender_vat': sender.vat[2:] if sender.vat.startswith('ES') else sender.vat,
             'fiscal_year': str(self.date.year),
             'freelancer': freelancer,
+            'is_freelancer': freelancer,  # For bugfix, will be removed in master
             'epigrafe': self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', '')
         }
         lroe_values.update({'tbai_b64_list': [base64.b64encode(self.xml_attachment_id.raw).decode()]})
@@ -307,6 +308,8 @@ class L10nEsEdiTbaiDocument(models.Model):
     @api.model
     def _process_post_response_xml_bi(self, env, response_xml):
         """Government response processing for Bizkaia."""
+        if response_xml is None:
+            return False, []
         success = response_xml.findtext('.//EstadoRegistro') == "Correcto"
 
         if success:
@@ -414,7 +417,7 @@ class L10nEsEdiTbaiDocument(models.Model):
             **self._get_regime_code_value(values['taxes'], values['is_simplified']),
         }
 
-        if not values['partner'] or not values['partner']._l10n_es_is_foreign():
+        if not values['partner'] or not values['partner']._l10n_es_is_foreign() or values["is_simplified"]:
             sale_values.update(**self._get_importe_desglose_es_partner(values['base_lines'], values['is_refund']))
         else:
             sale_values.update(**self._get_importe_desglose_foreign_partner(values['base_lines'], values['is_refund']))
@@ -422,14 +425,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         return sale_values
 
     def _get_regime_code_value(self, taxes, is_simplified):
-        regime_key = []
-
-        if is_simplified and self.company_id.l10n_es_tbai_tax_agency != 'bizkaia':
-            regime_key.append('52')  # code for simplified invoices
-        else:
-            regime_key.append(taxes._l10n_es_get_regime_code())
-
-        return {'regime_key': regime_key}
+        return {'regime_key': [taxes._l10n_es_get_regime_code()]}
 
     @api.model
     def _add_base_lines_tax_amounts(self, base_lines, company, tax_lines=None):
@@ -631,6 +627,9 @@ class L10nEsEdiTbaiDocument(models.Model):
 
         for values in values_per_grouping_key.values():
             total_amount += values['base_amount']
+
+        if is_refund:
+            total_amount = -total_amount
 
         return {
             'invoice_info': invoice_info,
