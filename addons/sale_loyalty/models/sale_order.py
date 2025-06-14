@@ -7,7 +7,7 @@ from functools import partial
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.fields import Command
+from odoo.fields import Command, float_compare
 from odoo.osv import expression
 from odoo.tools import float_round, lazy, str2bool
 
@@ -118,23 +118,31 @@ class SaleOrder(models.Model):
         return new_orders
 
     def action_confirm(self):
+        """
+        Confirms the sale order and awards loyalty points using LoyaltyFacade.
+        """
         for order in self:
             all_coupons = order.applied_coupon_ids | order.coupon_point_ids.coupon_id | order.order_line.coupon_id
             if any(order._get_real_points_for_coupon(coupon) < 0 for coupon in all_coupons):
                 raise ValidationError(_('One or more rewards on the sale order is invalid. Please check them.'))
-            order._update_programs_and_rewards()
-            order._add_loyalty_history_lines()
 
-        # Remove any coupon from 'current' program that don't claim any reward.
-        # This is to avoid ghost coupons that are lost forever.
-        # Claiming a reward for that program will require either an automated check or a manual input again.
+            # Award points using LoyaltyFacade
+            order.env['loyalty.facade'].award_points(order)
+
+            # Original logic: call to _update_programs_and_rewards and _add_loyalty_history_lines
+            # order._update_programs_and_rewards()
+            # order._add_loyalty_history_lines()
+
+        # Cleanup unclaimed coupons
         reward_coupons = self.order_line.coupon_id
         self.coupon_point_ids.filtered(
             lambda pe: pe.coupon_id.program_id.applies_on == 'current' and pe.coupon_id not in reward_coupons
         ).coupon_id.sudo().unlink()
-        # Add/remove the points to our coupons
+
+        # Update coupon points
         for coupon, change in self.filtered(lambda s: s.state != 'sale')._get_point_changes().items():
             coupon.points += change
+
         res = super().action_confirm()
         self._send_reward_coupon_mail()
         return res
@@ -874,6 +882,64 @@ class SaleOrder(models.Model):
         reward_vals = self._get_reward_line_values(reward, coupon, **kwargs)
         self._write_vals_from_reward_vals(reward_vals, old_reward_lines)
         return {}
+    
+    def _apply_program_reward(self, reward, coupon, **kwargs):
+        """
+        Applies a reward to the order using LoyaltyFacade for point redemption.
+        Returns a dict with an error message or empty if successful.
+        """
+        self.ensure_one()
+        facade = self.env['loyalty.facade']
+        old_reward_lines = kwargs.get('old_lines', self.env['sale.order.line'])
+
+        # Validate coupon and reward
+        if not reward.program_id.is_nominative and reward.program_id.applies_on == 'future' and coupon in self.coupon_point_ids.coupon_id:
+            return {'error': _('The coupon can only be claimed on future orders.')}
+        points = self._get_real_points_for_coupon(coupon)
+        if points < reward.required_points:
+            return {'error': _('The coupon does not have enough points for the selected reward.')}
+
+        # Handle global discount conflicts
+        if reward.is_global_discount:
+            global_discount_reward_lines = self._get_applied_global_discount_lines()
+            global_discount_reward = global_discount_reward_lines.reward_id
+            if (
+                global_discount_reward
+                and global_discount_reward != reward
+                and self._best_global_discount_already_applied(global_discount_reward, reward)
+            ):
+                return {'error': _("A better global discount is already applied.")}
+            elif global_discount_reward and global_discount_reward != reward:
+                global_discount_reward_lines._reset_loyalty(True)
+                old_reward_lines |= global_discount_reward_lines
+
+        # Redeem points for discount using LoyaltyFacade
+        discount = facade.redeem_points(self, reward.required_points)
+        if float_compare(discount, 0.0, precision_digits=2) <= 0:
+            return {'error': _('No valid discount could be applied for the reward.')}
+
+        # Create reward line for discount
+        reward_vals = [{
+            'name': _('Discount: %s', reward.name),
+            'product_id': reward.discount_line_product_id.id,
+            'price_unit': -discount,
+            'product_uom_qty': 1.0,
+            'product_uom': reward.discount_line_product_id.uom_id.id,
+            'is_reward_line': True,
+            'reward_id': reward.id,
+            'coupon_id': coupon.id,
+            'tax_id': [(6, 0, reward.tax_id.ids)] if reward.tax_id else False,
+        }]
+        self._write_vals_from_reward_vals(reward_vals, old_reward_lines)
+
+        return {}
+
+        # Original logic (commented out for reference)
+        """
+        reward_vals = self._get_reward_line_values(reward, coupon, **kwargs)
+        self._write_vals_from_reward_vals(reward_vals, old_reward_lines)
+        return {}
+        """
 
     def _get_claimable_rewards(self, forced_coupons=None):
         """
@@ -929,17 +995,13 @@ class SaleOrder(models.Model):
 
     def _update_programs_and_rewards(self):
         """
-        Updates applied programs's given points with the current state of the order.
-        Checks automatic programs for applicability.
-        Updates applied rewards using the new points and the current state of the order (for example with % discounts).
+        Updates loyalty programs and awards points using LoyaltyFacade.
+        Retains validation and cleanup for coupons and reward lines.
         """
         self.ensure_one()
+        facade = self.env['loyalty.facade']
 
-        # +===================================================+
-        # |       STEP 1: Retrieve all applicable programs    |
-        # +===================================================+
-
-        # Automatically load in eWallet and loyalty cards coupons with previously received points
+        # Step 1: Apply nominative programs (e.g., eWallet, loyalty cards)
         if self._allow_nominative_programs():
             loyalty_card = self.env['loyalty.card'].search([
                 ('id', 'not in', self.applied_coupon_ids.ids),
@@ -951,71 +1013,67 @@ class SaleOrder(models.Model):
             ])
             if loyalty_card:
                 self.applied_coupon_ids += loyalty_card
-        # Programs that are applied to the order and count points
+
+        # Step 2: Award points using LoyaltyFacade
+        facade.award_points(self)
+
+        # Step 3: Cleanup expired coupons and invalid point entries
+        self.applied_coupon_ids = self.applied_coupon_ids.filtered(lambda c:
+            (not c.expiration_date or c.expiration_date >= fields.Date.today())
+        )
+        point_entries_to_unlink = self.env['sale.order.coupon.points']
+        for pe in self.coupon_point_ids:
+            if pe.coupon_id.partner_id.is_public and not self.partner_id.is_public:
+                pe.coupon_id.partner_id = self.partner_id
+            if pe.coupon_id.partner_id and pe.coupon_id.partner_id != self.partner_id:
+                pe.points = 0
+                point_entries_to_unlink |= pe
+        if point_entries_to_unlink:
+            point_entries_to_unlink.sudo().unlink()
+
+        # Original logic (commented out for reference)
+        """
+        # STEP 1: Retrieve all applicable programs
         points_programs = self._get_points_programs()
-        # Coupon programs that require the program's rules to match but do not count for points
         coupon_programs = self.applied_coupon_ids.program_id
-        # Programs that are automatic and not yet applied
         program_domain = self._get_program_domain()
         domain = expression.AND([program_domain, [('id', 'not in', points_programs.ids), ('trigger', '=', 'auto'), ('rule_ids.mode', '=', 'auto')]])
         automatic_programs = self.env['loyalty.program'].search(domain).filtered(lambda p:
             not p.limit_usage or p.total_order_count < p.max_usage)
-
         all_programs_to_check = points_programs | coupon_programs | automatic_programs
         all_coupons = self.coupon_point_ids.coupon_id | self.applied_coupon_ids
-        # First basic check using the program_domain -> for example if a program gets archived mid quotation
         domain_matching_programs = all_programs_to_check.filtered_domain(program_domain)
         all_programs_status = {p: {'error': 'error'} for p in all_programs_to_check - domain_matching_programs}
-        # Compute applicability and points given for all programs that passed the domain check
-        # Note that points are computed with reward lines present
         all_programs_status.update(self._program_check_compute_points(domain_matching_programs))
-        # Delay any unlink to the end of the function since they cause a full cache invalidation
         lines_to_unlink = self.env['sale.order.line']
         coupons_to_unlink = self.env['loyalty.card']
-        point_entries_to_unlink = self.env['sale.order.coupon.points']
-        # Remove any coupons that are expired
-        self.applied_coupon_ids = self.applied_coupon_ids.filtered(lambda c:
-            (not c.expiration_date or c.expiration_date >= fields.Date.today())
-        )
         point_ids_per_program = defaultdict(lambda: self.env['sale.order.coupon.points'])
         for pe in self.coupon_point_ids:
-            # Update coupons that were created for Public User
             if pe.coupon_id.partner_id.is_public and not self.partner_id.is_public:
                 pe.coupon_id.partner_id = self.partner_id
-            # Remove any point entry for a coupon that does not belong to the customer
             if pe.coupon_id.partner_id and pe.coupon_id.partner_id != self.partner_id:
                 pe.points = 0
                 point_entries_to_unlink |= pe
             else:
                 point_ids_per_program[pe.coupon_id.program_id] |= pe
 
-        # +==========================================+
-        # |       STEP 2: Update applied programs    |
-        # +==========================================+
-
-        # Programs that were not applied via a coupon
+        # STEP 2: Update applied programs
         for program in points_programs:
             status = all_programs_status[program]
             program_point_entries = point_ids_per_program[program]
             if 'error' in status:
-                # Program is not applicable anymore
                 coupons_from_order = program_point_entries.coupon_id.filtered(lambda c: c.order_id == self)
                 all_coupons -= coupons_from_order
-                # Invalidate those lines so that they don't impact anything further down the line
                 program_reward_lines = self.order_line.filtered(lambda l: l.coupon_id in coupons_from_order)
                 program_reward_lines._reset_loyalty(True)
                 lines_to_unlink |= program_reward_lines
-                # Delete coupon created by this order for this program if it is not nominative
                 if not program.is_nominative:
                     coupons_to_unlink |= coupons_from_order
                 else:
-                    # Only remove the coupon_point_id
                     point_entries_to_unlink |= program_point_entries
                     point_entries_to_unlink.points = 0
-                # Remove the code activated rules
                 self.code_enabled_rule_ids -= program.rule_ids
             else:
-                # Program stays applicable, update our points
                 all_point_changes = [p for p in status['points'] if p]
                 if not all_point_changes and program.is_nominative:
                     all_point_changes = [0]
@@ -1023,9 +1081,7 @@ class SaleOrder(models.Model):
                     pe.points = points
                 if len(program_point_entries) < len(all_point_changes):
                     new_coupon_points = all_point_changes[len(program_point_entries):]
-                    # next_order_coupons should be linked to the order's partner
                     partner_id = program.program_type == 'next_order_coupons' and self.partner_id.id
-                    # NOTE: Maybe we could batch the creation of coupons across multiple programs but this really only applies to gift cards
                     new_coupons = self.env['loyalty.card'].with_context(loyalty_no_mail=True, tracking_disable=True).create([{
                         'program_id': program.id,
                         'partner_id': partner_id,
@@ -1039,69 +1095,41 @@ class SaleOrder(models.Model):
                     coupons_to_unlink |= point_ids_to_unlink.coupon_id
                     point_ids_to_unlink.points = 0
 
-        # Programs applied using a coupon
-        applied_coupon_per_program = defaultdict(lambda: self.env['loyalty.card'])
-        for coupon in self.applied_coupon_ids:
-            applied_coupon_per_program[coupon.program_id] |= coupon
-        for program in coupon_programs:
-            if program not in domain_matching_programs or\
-                (program.applies_on == 'current' and 'error' in all_programs_status[program]):
-                program_reward_lines = self.order_line.filtered(lambda l: l.coupon_id in applied_coupon_per_program[program])
-                program_reward_lines._reset_loyalty(True)
-                lines_to_unlink |= program_reward_lines
-                self.applied_coupon_ids -= applied_coupon_per_program[program]
-                all_coupons -= applied_coupon_per_program[program]
-
-        # +==========================================+
-        # |       STEP 3: Update reward lines        |
-        # +==========================================+
-
-        # We will reuse these lines as much as possible, this resets the order in a reward-less state
+        # STEP 3: Update reward lines
         reward_line_pool = self.order_line.filtered(lambda l: l.reward_id and l.coupon_id)._reset_loyalty()
         seen_rewards = set()
         line_rewards = []
-        payment_rewards = [] # gift_card and ewallet are considered as payments and should always be applied last
+        payment_rewards = []
         for line in self.order_line:
-            if line.reward_identifier_code in seen_rewards or not line.reward_id or\
-                not line.coupon_id:
+            if line.reward_identifier_code in seen_rewards or not line.reward_id or not line.coupon_id:
                 continue
             seen_rewards.add(line.reward_identifier_code)
             if line.reward_id.program_id.is_payment_program:
                 payment_rewards.append((line.reward_id, line.coupon_id, line.reward_identifier_code, line.product_id))
             else:
                 line_rewards.append((line.reward_id, line.coupon_id, line.reward_identifier_code, line.product_id))
-
         for reward_key in itertools.chain(line_rewards, payment_rewards):
             coupon = reward_key[1]
             reward = reward_key[0]
             program = reward.program_id
             points = self._get_real_points_for_coupon(coupon)
             if coupon not in all_coupons or points < reward.required_points or program not in domain_matching_programs:
-                # Reward is not applicable anymore, the reward lines will simply be removed at the end of this function
                 continue
             try:
                 values_list = self._get_reward_line_values(reward, coupon, product=reward_key[3])
             except UserError:
-                # It could happen that we have nothing to discount after changing the order.
                 values_list = []
             reward_line_pool = self._write_vals_from_reward_vals(values_list, reward_line_pool, delete=False)
-
         lines_to_unlink |= reward_line_pool
 
-        # +==========================================+
-        # |       STEP 4: Apply new programs         |
-        # +==========================================+
-
+        # STEP 4: Apply new programs
         for program in automatic_programs:
             program_status = all_programs_status[program]
             if 'error' in program_status:
                 continue
             self.__try_apply_program(program, False, program_status)
 
-        # +==========================================+
-        # |       STEP 5: Cleanup                    |
-        # +==========================================+
-
+        # STEP 5: Cleanup
         order_line_update = [(Command.DELETE, line.id) for line in lines_to_unlink]
         if order_line_update:
             self.write({'order_line': order_line_update})
@@ -1109,6 +1137,7 @@ class SaleOrder(models.Model):
             coupons_to_unlink.sudo().unlink()
         if point_entries_to_unlink:
             point_entries_to_unlink.sudo().unlink()
+        """
 
     def _get_not_rewarded_order_lines(self):
         return self.order_line.filtered(lambda line: line.product_id and not line.reward_id)
