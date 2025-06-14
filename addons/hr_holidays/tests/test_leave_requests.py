@@ -436,7 +436,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
         calendar.write({
             'flexible_hours': True,
-            'hours_per_day': 8.0
+            'hours_per_day': 8.0,
+            'full_time_required_hours': 40
         })
 
         leave1 = self.env['hr.leave'].create({
@@ -491,7 +492,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_hour_to': 17,
         })
 
-        self.assertEqual(leave5.number_of_hours, 8)
+        self.assertEqual(leave5.number_of_hours, 10)
 
     def test_number_of_hours_display_global_leave(self):
         # Check that the field number_of_hours
@@ -1225,6 +1226,7 @@ class TestLeaveRequests(TestHrHolidaysCommon):
         calendar = self.env['resource.calendar'].create({
             'name': 'Flexible 40h/week',
             'hours_per_day': 8.0,
+            'full_time_required_hours': 40,
             'flexible_hours': True,
         })
         employee.resource_calendar_id = calendar
@@ -1246,8 +1248,8 @@ class TestLeaveRequests(TestHrHolidaysCommon):
             'request_date_to': '2024-01-27',
         })
         holiday_status = self.holidays_type_4.with_user(self.user_employee_id)
-        self._check_holidays_status(holiday_status, employee, 20.0, 0.0, 20.0, 15.0)
-        self.assertEqual(leave.duration_display, '5 days')
+        self._check_holidays_status(holiday_status, employee, 20.0, 0.0, 20.0, 16.0)
+        self.assertEqual(leave.duration_display, '4 days')
 
     def test_default_request_date_timezone(self):
         """
@@ -1386,3 +1388,27 @@ class TestLeaveRequests(TestHrHolidaysCommon):
 
         self.assertEqual(modified_leave.request_date_from, two_days_after)
         self.assertEqual(modified_leave.request_date_to, two_days_after)
+
+    def test_public_holiday_in_the_middle_of_flexible_request(self):
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Test calendar',
+            'hours_per_day': 8,
+            'full_time_required_hours': 56,
+            'flexible_hours': True
+        })
+        self.employee_emp.resource_calendar_id = calendar
+        # Create a public holiday for the flexible calendar
+        self.env['resource.calendar.leaves'].create({
+            'date_from': datetime(2022, 3, 11),
+            'date_to': datetime(2022, 3, 11, 23, 59, 59),
+            'calendar_id': calendar.id,
+        })
+
+        leave = self.env['hr.leave'].with_user(self.user_employee_id).create({
+            'name': 'Holiday Request',
+            'employee_id': self.employee_emp.id,
+            'holiday_status_id': self.holidays_type_1.id,
+            'request_date_from': date(2022, 3, 10),
+            'request_date_to': date(2022, 3, 12),
+        })
+        self.assertEqual(leave.number_of_days, 2)

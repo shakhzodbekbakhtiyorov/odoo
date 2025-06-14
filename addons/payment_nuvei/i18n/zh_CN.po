@@ -3,6 +3,7 @@
 # 	* payment_nuvei
 # 
 # Translators:
+# Chloe Wang, 2025
 # Wil Odoo, 2025
 # 
 msgid ""
@@ -23,7 +24,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/payment_nuvei/models/payment_transaction.py:0
 msgid "%(payment_method)s requires both a first and last name."
-msgstr ""
+msgstr "%(payment_method)s 需要姓和名。"
 
 #. module: payment_nuvei
 #. odoo-python
@@ -31,7 +32,7 @@ msgstr ""
 msgid ""
 "An error occurred during the processing of your payment (%(reason)s). Please"
 " try again."
-msgstr ""
+msgstr "处理付款过程中发生错误，请再试一次。（付款：%(reason)s）"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,field_description:payment_nuvei.field_payment_provider__code
@@ -47,27 +48,27 @@ msgstr "商户识别码"
 #. odoo-python
 #: code:addons/payment_nuvei/models/payment_transaction.py:0
 msgid "No transaction found matching reference %(ref)s."
-msgstr ""
+msgstr "没有发现与参考文献%(ref)s相匹配的交易。"
 
 #. module: payment_nuvei
 #: model:ir.model.fields.selection,name:payment_nuvei.selection__payment_provider__code__nuvei
 msgid "Nuvei"
-msgstr ""
+msgstr "Nuvei"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,field_description:payment_nuvei.field_payment_provider__nuvei_merchant_identifier
 msgid "Nuvei Merchant Identifier"
-msgstr ""
+msgstr "Nuvei 商户标识码"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,field_description:payment_nuvei.field_payment_provider__nuvei_secret_key
 msgid "Nuvei Secret Key"
-msgstr ""
+msgstr "Nuvei 密钥"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,field_description:payment_nuvei.field_payment_provider__nuvei_site_identifier
 msgid "Nuvei Site Identifier"
-msgstr ""
+msgstr "Nuvei 站点标识符"
 
 #. module: payment_nuvei
 #: model:ir.model,name:payment_nuvei.model_payment_provider
@@ -106,7 +107,7 @@ msgstr "密钥"
 #. module: payment_nuvei
 #: model_terms:ir.ui.view,arch_db:payment_nuvei.payment_provider_form
 msgid "Site Identifier"
-msgstr ""
+msgstr "站点标识符"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,help:payment_nuvei.field_payment_provider__nuvei_merchant_identifier
@@ -122,7 +123,7 @@ msgstr "客户已离开支付页面。"
 #. module: payment_nuvei
 #: model:ir.model.fields,help:payment_nuvei.field_payment_provider__nuvei_site_identifier
 msgid "The site identifier code associated with the merchant account."
-msgstr ""
+msgstr "与商家账户相关的站点标识符代码。"
 
 #. module: payment_nuvei
 #: model:ir.model.fields,help:payment_nuvei.field_payment_provider__code

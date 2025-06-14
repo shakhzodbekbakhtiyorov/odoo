@@ -8,6 +8,7 @@ import { cleanLinkArtifacts, unformat } from "./_helpers/format";
 import { getContent, setSelection } from "./_helpers/selection";
 import { pasteHtml, pasteOdooEditorHtml, pasteText, undo } from "./_helpers/user_actions";
 import { createBaseContainer } from "@html_editor/utils/base_container";
+import { expectElementCount } from "./_helpers/ui_expectations";
 
 function isInline(node) {
     return ["I", "B", "U", "S", "EM", "STRONG", "IMG", "BR", "A", "FONT"].includes(node);
@@ -899,6 +900,21 @@ describe("Unwrapping html element", () => {
             },
             contentAfter: "<h1>mnabc</h1><h1>def</h1><h1>ghi[]op</h1>",
         });
+        await testEditor({
+            contentBefore: "<p><strong>test []</strong></p>",
+            stepFunction: async (editor) => {
+                pasteHtml(editor, "<strong>paste</strong>");
+            },
+            contentAfter: "<p><strong>test paste[]</strong></p>",
+        });
+        await testEditor({
+            contentBefore: '<p><font style="background-color: rgb(255, 0, 0);">[]test</font></p>',
+            stepFunction: async (editor) => {
+                pasteHtml(editor, '<font style="background-color: rgb(255, 0, 0);">nested </font>');
+            },
+            contentAfter:
+                '<p><font style="background-color: rgb(255, 0, 0);">nested []test</font></p>',
+        });
     });
     test("should not unwrap a node when pasting at start of different node", async () => {
         await testEditor({
@@ -1001,6 +1017,42 @@ describe("Unwrapping html element", () => {
                 pasteHtml(editor, "<p><br></p><p><br></p><p><br></p>");
             },
             contentAfter: "<p>a</p><p><br></p><p><br></p><p>[]<br></p>",
+        });
+    });
+    test("should unwrap base container node when pasting on different empty node", async () => {
+        await testEditor({
+            contentBefore: "<h1>[]<br></h1>",
+            stepFunction: async (editor) => {
+                pasteHtml(editor, "<p>abc</p>");
+            },
+            contentAfter: "<h1>abc[]</h1>",
+        });
+        await testEditor({
+            contentBefore: "<h1>[]<br></h1>",
+            stepFunction: async (editor) => {
+                pasteHtml(editor, '<div class="o-paragraph">abc</div>');
+            },
+            contentAfter: "<h1>abc[]</h1>",
+        });
+        await testEditor({
+            contentBefore: "<h1>[]<br></h1>",
+            stepFunction: async (editor) => {
+                pasteOdooEditorHtml(
+                    editor,
+                    '<p><font style="background-color: rgb(255, 0, 0);">abc</font></p>'
+                );
+            },
+            contentAfter: '<h1><font style="background-color: rgb(255, 0, 0);">abc</font>[]</h1>',
+        });
+        await testEditor({
+            contentBefore: "<h1>[]<br></h1>",
+            stepFunction: async (editor) => {
+                pasteOdooEditorHtml(
+                    editor,
+                    '<div class="o-paragraph"><font style="background-color: rgb(255, 0, 0);">abc</font></div>'
+                );
+            },
+            contentAfter: '<h1><font style="background-color: rgb(255, 0, 0);">abc</font>[]</h1>',
         });
     });
 });
@@ -2435,18 +2487,18 @@ describe("link", () => {
             });
         });
 
-        test("should paste and transform an URL in a existing link if pasting valid url (collapsed)", async () => {
+        test("should paste and update an URL in a existing link if label and url are aligned", async () => {
             await testEditor({
                 contentBefore: '<p>a<a href="http://existing.com">[]c</a>d</p>',
                 stepFunction: async (editor) => {
                     pasteText(editor, "https://www.xyz.xdc");
                 },
-                contentAfter: '<p>a<a href="https://www.xyz.xdcc">https://www.xyz.xdc[]c</a>d</p>',
+                contentAfter: '<p>a<a href="http://existing.com">https://www.xyz.xdc[]c</a>d</p>',
             });
             await testEditor({
-                contentBefore: '<p>a<a href="http://existing.com">b[].com</a>d</p>',
+                contentBefore: '<p>a<a href="http://bo.com">bo[].com</a>d</p>',
                 stepFunction: async (editor) => {
-                    pasteText(editor, "oom");
+                    pasteText(editor, "om");
                 },
                 contentAfter: '<p>a<a href="http://boom.com">boom[].com</a>d</p>',
             });
@@ -2477,7 +2529,7 @@ describe("link", () => {
             );
             pasteText(editor, "http://odoo.com");
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>xy<a href="http://odoo.com">http://odoo.com</a>[]z</p>`
             );
@@ -2490,7 +2542,7 @@ describe("link", () => {
             );
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             expect(getContent(el)).toBe(`<p>xy${imgUrl}[]z</p>`);
 
             await press("Enter");
@@ -2503,7 +2555,7 @@ describe("link", () => {
             );
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             expect(getContent(el)).toBe(`<p>xy${imgUrl}[]z</p>`);
 
             await press("ArrowDown");
@@ -2540,11 +2592,24 @@ describe("link", () => {
                 stepFunction: async (editor) => {
                     pasteHtml(
                         editor,
-                        '<a href="www.odoo.com">odoo.com</a><br><a href="www.google.com">google.com</a>'
+                        '<a href="www.odoo.com">odoo.com</a><br><a href="google.com">google.com</a>'
                     );
                 },
                 contentAfter:
                     '<p><a href="www.odoo.com">odoo.com</a></p><p><a href="https://google.com">google.com[]</a></p>',
+            });
+        });
+        test("should paste html content over an empty link (collapsed) (2)", async () => {
+            await testEditor({
+                contentBefore: '<p><a href="#">[]\u200B</a></p>',
+                stepFunction: async (editor) => {
+                    pasteHtml(
+                        editor,
+                        '<a href="www.odoo.com">odoo.com</a><br><a href="www.google.com">google.com</a>'
+                    );
+                },
+                contentAfter:
+                    '<p><a href="www.odoo.com">odoo.com</a></p><p><a href="www.google.com">google.com[]</a></p>',
             });
         });
 
@@ -2552,7 +2617,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, `abc ${url} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${url}">${url}</a> def[]</p>`
             );
@@ -2562,7 +2627,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, `abc ${imgUrl} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${imgUrl}">${imgUrl}</a> def[]</p>`
             );
@@ -2572,7 +2637,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, `abc ${videoUrl} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${videoUrl}">${videoUrl}</a> def[]</p>`
             );
@@ -2582,7 +2647,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, `${url} ${videoUrl} ${imgUrl}`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p><a href="${url}">${url}</a> <a href="${videoUrl}">${videoUrl}</a> <a href="${imgUrl}">${imgUrl}</a>[]</p>`
             );
@@ -2592,7 +2657,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, `${url} abc ${videoUrl} def ${imgUrl}`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p><a href="${url}">${url}</a> abc <a href="${videoUrl}">${videoUrl}</a> def <a href="${imgUrl}">${imgUrl}</a>[]</p>`
             );
@@ -2703,7 +2768,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[xyz]</p>");
             pasteText(editor, `abc ${url} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${url}">${url}</a> def[]</p>`
             );
@@ -2713,7 +2778,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[xyz]</p>");
             pasteText(editor, `abc ${imgUrl} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${imgUrl}">${imgUrl}</a> def[]</p>`
             );
@@ -2723,7 +2788,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[xyz]</p>");
             pasteText(editor, `abc ${videoUrl} def`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${videoUrl}">${videoUrl}</a> def[]</p>`
             );
@@ -2733,7 +2798,7 @@ describe("link", () => {
             const { el, editor } = await setupEditor("<p>[xyz]</p>");
             pasteText(editor, `${url} ${videoUrl} ${imgUrl}`);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p><a href="${url}">${url}</a> <a href="${videoUrl}">${videoUrl}</a> <a href="${imgUrl}">${imgUrl}</a>[]</p>`
             );
@@ -2792,7 +2857,7 @@ describe("link", () => {
             );
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             expect(getContent(el)).toBe(
                 `<p>abhttps://download.odoocdn.com/icons/website/static/description/icon.png[]cd</p>`
             );
@@ -2806,7 +2871,7 @@ describe("link", () => {
             );
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             expect(getContent(el)).toBe(
                 `<p>abhttps://download.odoocdn.com/icons/website/static/description/icon.png[]cd</p>`
             );
@@ -2823,11 +2888,24 @@ describe("link", () => {
                 stepFunction: async (editor) => {
                     pasteHtml(
                         editor,
-                        '<a href="www.odoo.com">odoo.com</a><br><a href="www.google.com">google.com</a>'
+                        '<a href="www.odoo.com">odoo.com</a><br><a href="google.com">google.com</a>'
                     );
                 },
                 contentAfter:
                     '<p><a href="www.odoo.com">odoo.com</a></p><p><a href="https://google.com">google.com[]</a></p>',
+            });
+        });
+        test("should paste html content over a link if all of its contents is selected (not collapsed) (2)", async () => {
+            await testEditor({
+                contentBefore: '<p><a href="#">[xyz]</a></p>',
+                stepFunction: async (editor) => {
+                    pasteHtml(
+                        editor,
+                        '<a href="www.odoo.com">odoo.com</a><br><a href="www.google.com">google.com</a>'
+                    );
+                },
+                contentAfter:
+                    '<p><a href="www.odoo.com">odoo.com</a></p><p><a href="www.google.com">google.com[]</a></p>',
             });
         });
     });
@@ -2839,7 +2917,7 @@ describe("images", () => {
             const { el, editor } = await setupEditor("<p>ab[]cd</p>");
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             await press("Enter");
             expect(getContent(el)).toBe(`<p>ab<img src="${imgUrl}">[]cd</p>`);
         });
@@ -2848,7 +2926,7 @@ describe("images", () => {
             const { el, editor } = await setupEditor('<p>a<span class="a">b[]c</span>d</p>');
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             await press("Enter");
             expect(getContent(el)).toBe(
                 `<p>a<span class="a">b<img src="${imgUrl}">[]c</span>d</p>`
@@ -2862,7 +2940,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>a<a href="http://existing.com">b<img src="${imgUrl}">[]c</a>d</p>`
             );
@@ -2873,7 +2951,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -2889,7 +2967,7 @@ describe("images", () => {
             pasteText(editor, "*should not disappear*");
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -2905,7 +2983,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             await press("Enter");
             expect(cleanLinkArtifacts(getContent(el))).toBe(`<p>ab<img src="${imgUrl}">[]cd</p>`);
         });
@@ -2917,7 +2995,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             await press("Enter");
             expect(getContent(el)).toBe(
                 `<p>a<span class="a">b<img src="${imgUrl}">[]c</span>d</p>`
@@ -2931,7 +3009,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(0);
+            await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>a<a href="http://existing.com">b<img src="${imgUrl}">[]c</a>d</p>`
             );
@@ -2942,7 +3020,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -2968,7 +3046,7 @@ describe("images", () => {
             // paste url
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -2981,7 +3059,7 @@ describe("images", () => {
             const { el, editor } = await setupEditor("<p>[abc]</p>");
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick first command (Embed image)
             await press("Enter");
             // Undo
@@ -2994,7 +3072,7 @@ describe("images", () => {
 
             pasteText(editor, imgUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -3018,7 +3096,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>ab[]cd</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Force powerbox validation on the default first choice
             await press("Enter");
             // Wait for the getYoutubeVideoElement promise to resolve.
@@ -3032,7 +3110,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor('<p>a<span class="a">b[]c</span>d</p>');
             pasteText(editor, "https://youtu.be/dQw4w9WgXcQ");
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Force powerbox validation on the default first choice
             await press("Enter");
             // Wait for the getYoutubeVideoElement promise to resolve.
@@ -3060,7 +3138,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, url);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -3074,7 +3152,7 @@ describe("youtube video", () => {
             pasteText(editor, "*should not disappear*");
             pasteText(editor, url);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -3096,7 +3174,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>");
             pasteText(editor, "https://youtu.be/dQw4w9WgXcQ");
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Force powerbox validation on the default first choice
             await press("Enter");
             // Wait for the getYoutubeVideoElement promise to resolve.
@@ -3112,7 +3190,7 @@ describe("youtube video", () => {
             );
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Force powerbox validation on the default first choice
             await press("Enter");
             // Wait for the getYoutubeVideoElement promise to resolve.
@@ -3139,7 +3217,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -3166,7 +3244,7 @@ describe("youtube video", () => {
             // paste url
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");
@@ -3179,7 +3257,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>[abc]</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Force powerbox validation on the default first choice
             await press("Enter");
             // Undo
@@ -3191,7 +3269,7 @@ describe("youtube video", () => {
             const { el, editor } = await setupEditor("<p>[abc]</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
-            expect(".o-we-powerbox").toHaveCount(1);
+            await expectElementCount(".o-we-powerbox", 1);
             // Pick the second command (Paste as URL)
             await press("ArrowDown");
             await press("Enter");

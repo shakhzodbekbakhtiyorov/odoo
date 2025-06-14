@@ -80,10 +80,13 @@ export class MessageReactionList extends Component {
     }
 
     hasSelfReacted(reaction) {
-        return this.store.self.in(reaction.personas);
+        return this.props.message.effectiveSelf.in(reaction.personas);
     }
 
     onClickReaction(reaction) {
+        if (!this.props.message.canAddReaction()) {
+            return;
+        }
         if (this.hasSelfReacted(reaction)) {
             reaction.remove();
         } else {

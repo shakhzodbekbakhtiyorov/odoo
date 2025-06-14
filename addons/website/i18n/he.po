@@ -33,7 +33,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 13:22+0000\n"
+"POT-Creation-Date: 2025-06-06 18:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
 "Last-Translator: or balmas, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
@@ -68,7 +68,7 @@ msgstr ""
 msgid ""
 "\" This company transformed our business. <br/>Their solutions are "
 "innovative and reliable. \""
-msgstr ""
+msgstr "\"החברה הזו שינתה את העסק שלנו. <br/>הפתרונות שלהם חדשניים ואמינים.\""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_blockquote
@@ -467,7 +467,7 @@ msgstr "16"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "2 <span class=\"visually-hidden\">(current)</span>"
-msgstr ""
+msgstr "2 <span class=\"visually-hidden\">(נוכחי)</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_map_options
@@ -502,17 +502,17 @@ msgstr "2000 ק\"מ"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_masonry_block_mosaic_template
 msgid "22%"
-msgstr ""
+msgstr "22%"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_wave
 msgid "24/7 Customer Support"
-msgstr ""
+msgstr "תמיכה בלקוחות 24/7"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_key_benefits
 msgid "24/7 Support"
-msgstr ""
+msgstr "תמיכה 24/7"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.color_combinations_debug_view
@@ -961,12 +961,12 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_cta_card
 msgid "<i class=\"fa fa-check text-o-color-1\" role=\"img\"/>  Complete access"
-msgstr ""
+msgstr "<i class=\"fa fa-check text-o-color-1\" role=\"img\"/>   גישה מלאה "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_cta_card
 msgid "<i class=\"fa fa-check text-o-color-1\" role=\"img\"/>  Quick support"
-msgstr ""
+msgstr "<i class=\"fa fa-check text-o-color-1\" role=\"img\"/>   תמיכה מהירה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_cta_card
@@ -981,7 +981,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
 msgid "<i class=\"fa fa-check text-success\" role=\"img\"/>  Access all modules"
-msgstr ""
+msgstr "<i class=\"fa fa-check text-success\" role=\"img\"/> גישה לכל המודלים"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -1072,7 +1072,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_rating_options
 msgid "<i class=\"fa fa-fw fa-refresh me-1\"/> Replace Icon"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-refresh me-1\"/> החלף סמל"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_rating_options
@@ -1773,6 +1773,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Email</span>\n"
 "                                                        <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\"> דוא\"ל</span>\n"
+"                                                     <span class=\"s_website_form_mark\">*</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -1780,6 +1782,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Name</span>\n"
 "                                                        <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">שם</span>\n"
+"                                                  <span class=\"s_website_form_mark\">*</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -1793,6 +1797,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Question</span>\n"
 "                                                        <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">תוכן הפנייה</span>\n"
+"                                                                 <span class=\"s_website_form_mark\">* </span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus
@@ -1800,6 +1806,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Subject</span>\n"
 "                                                        <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">נושא הפנייה</span>\n"
+"                                                             <span class=\"s_website_form_mark\">*</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form
@@ -1807,6 +1815,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Subject</span>\n"
 "                                <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">נושא הפנייה</span>\n"
+"                                               <span class=\"s_website_form_mark\">* </span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form
@@ -1819,6 +1829,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Your Email</span>\n"
 "                                <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">כתובת מייל</span>\n"
+"                                         <span class=\"s_website_form_mark\">*</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form
@@ -1826,6 +1838,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Your Name</span>\n"
 "                                <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">שם מלא</span>\n"
+"                                  <span class=\"s_website_form_mark\">*</span>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form
@@ -1833,6 +1847,8 @@ msgid ""
 "<span class=\"s_website_form_label_content\">Your Question</span>\n"
 "                                <span class=\"s_website_form_mark\"> *</span>"
 msgstr ""
+"<span class=\"s_website_form_label_content\">תוכן הפנייה </span>\n"
+"                                             <span class=\"s_website_form_mark\">* </span> "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.website_controller_pages_form_view
@@ -2114,7 +2130,7 @@ msgstr "ביקור חדש נחשב אם ההתחברות האחרונה היית
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "A second item"
-msgstr ""
+msgstr "פריט שני"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_catalog
@@ -2126,7 +2142,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "A third item"
-msgstr ""
+msgstr "פריט שלישי"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_timeline
@@ -2190,7 +2206,7 @@ msgstr "אודותינו"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_shape_image
 msgid "About our product line"
-msgstr ""
+msgstr "על קו המוצרים שלנו"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.aboutus
@@ -2321,7 +2337,7 @@ msgstr "הוסף תאריך"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.grid_layout_options
 msgid "Add Elements"
-msgstr ""
+msgstr "הוסף אלמנטים"
 
 #. module: website
 #. odoo-javascript
@@ -2462,7 +2478,7 @@ msgstr "הוסף שפות"
 #. odoo-javascript
 #: code:addons/website/static/src/snippets/s_website_form/options.js:0
 msgid "Add option"
-msgstr ""
+msgstr "הוסף אפשרות"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.view_edit_third_party_domains
@@ -2536,7 +2552,7 @@ msgstr "כתובת"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_card_options
 msgid "Adjust the image width"
-msgstr ""
+msgstr "התאם את רוחב התמונה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_landing_s_showcase
@@ -2723,13 +2739,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website/static/src/xml/website.cookies_bar.xml:0
 msgid "Allow all cookies"
-msgstr ""
+msgstr "אפשר את כל העוגיות"
 
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/xml/website.cookies_bar.xml:0
 msgid "Allow the use of cookies from this website on this browser?"
-msgstr ""
+msgstr "האם לאפשר שימוש בעוגיות מאתר זה בדפדפן הזה?"
 
 #. module: website
 #: model:ir.model.fields,help:website.field_ir_ui_view__track
@@ -2751,7 +2767,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
 msgid "Allows your visitors to chat with you"
-msgstr ""
+msgstr "אפשר למבקרים שלך לדבר איתך"
 
 #. module: website
 #. odoo-javascript
@@ -2825,7 +2841,7 @@ msgstr "אירעה שגיאה בעת עיבוד התבנית"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "An example alert with an icon"
-msgstr ""
+msgstr "התראה לדוגמה עם סמל"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
@@ -2846,7 +2862,7 @@ msgstr "ניתוח קוקיז ומידע פרטיות."
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.cookie_policy
 msgid "Analytics<br/>(optional)"
-msgstr ""
+msgstr "אנליזה<br/>(אופציונלי)"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_numbers
@@ -3139,7 +3155,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Banner"
-msgstr ""
+msgstr "באנר"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_chart_options
@@ -3637,7 +3653,7 @@ msgstr "לא ניתן לטעון את מפת גוגל."
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_pricelist_cafe
 msgid "Cappuccino"
-msgstr ""
+msgstr "קפוצינו"
 
 #. module: website
 #. odoo-javascript
@@ -3727,7 +3743,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_catalog
 msgid "Carrot Cake"
-msgstr ""
+msgstr "עוגת גזר"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.template_footer_links
@@ -3907,7 +3923,7 @@ msgstr "בחר שם עוגן"
 #. odoo-javascript
 #: code:addons/website/static/src/xml/website.editor.xml:0
 msgid "Choose from list"
-msgstr ""
+msgstr "בחר מרשימה"
 
 #. module: website
 #. odoo-javascript
@@ -4058,7 +4074,7 @@ msgstr "סגור עורך"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Closer Look"
-msgstr ""
+msgstr "מבט מקרוב"
 
 #. module: website
 #. odoo-javascript
@@ -4180,12 +4196,12 @@ msgstr "חברה"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Comparisons"
-msgstr ""
+msgstr "השוואות"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
 msgid "Competitive pricing"
-msgstr ""
+msgstr "מחיר מתחרה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
@@ -4481,7 +4497,7 @@ msgstr "זכויות יוצרים"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
 msgid "Core Features"
-msgstr ""
+msgstr "תכונות עיקריות"
 
 #. module: website
 #. odoo-javascript
@@ -4736,7 +4752,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website/static/src/snippets/s_website_form/options.js:0
 msgid "Custom Text"
-msgstr ""
+msgstr "טקסט מותאם אישית"
 
 #. module: website
 #. odoo-javascript
@@ -4779,7 +4795,7 @@ msgstr "לקוחות"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_wave
 msgid "Customizable Settings"
-msgstr ""
+msgstr "הגדרות מותאמות אישית"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_table_of_content
@@ -4958,7 +4974,7 @@ msgstr "ערך ברירת מחדל"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Default checkbox"
-msgstr ""
+msgstr "צ'ק בוקס ברירת מחדל"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__website_default_lang_id
@@ -5233,7 +5249,7 @@ msgstr "גלה עוד"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_media_list
 msgid "Discover more <i class=\"fa fa-long-arrow-right align-middle ms-1\"/>"
-msgstr ""
+msgstr "גלה עוד <i class=\"fa fa-long-arrow-right align-middle ms-1\"/>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_services_s_image_text
@@ -5276,7 +5292,7 @@ msgstr "גלה את ההכרות שלנו"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_discovery
 msgid "Discover our solutions"
-msgstr ""
+msgstr "גלה את הפתרונות שלנו"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_images_subtitles
@@ -5355,12 +5371,12 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar_options
 msgid "Display After"
-msgstr ""
+msgstr "הצג אחרי"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar_options
 msgid "Display Below"
-msgstr ""
+msgstr "הצג מתחת "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar_options
@@ -5807,7 +5823,7 @@ msgstr "אלגנטי"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Elements"
-msgstr ""
+msgstr "אלמנטים"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_landing_3_s_call_to_action
@@ -5887,13 +5903,13 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Empowerment"
-msgstr ""
+msgstr "העצמה"
 
 #. module: website
 #. odoo-python
 #: code:addons/website/models/website_snippet_filter.py:0
 msgid "Empty field name in “%s”"
-msgstr ""
+msgstr "שדה שם ריק ב- “%s”"
 
 #. module: website
 #. odoo-javascript
@@ -6123,7 +6139,7 @@ msgstr "מומחה"
 #: model_terms:ir.ui.view,arch_db:website.s_features_wall
 #: model_terms:ir.ui.view,arch_db:website.s_wavy_grid
 msgid "Expertise and Knowledge"
-msgstr ""
+msgstr "מומחיות וידע"
 
 #. module: website
 #: model:website.configurator.feature,description:website.feature_page_privacy_policy
@@ -6210,7 +6226,7 @@ msgstr "קישור נוסף"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.layout
 msgid "Extra items button"
-msgstr ""
+msgstr "כפתור פריטים נוספים"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.footer_custom
@@ -6285,7 +6301,7 @@ msgstr "התקנת \"%s\" נכשלה"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_key_benefits
 msgid "Fair pricing"
-msgstr ""
+msgstr "תמחור הוגן"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__favicon
@@ -6931,7 +6947,7 @@ msgstr "עבור ל-"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.contactus_thanks_ir_ui_view
 msgid "Go to Homepage"
-msgstr ""
+msgstr "בחזרה לדף הבית"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.view_view_form_extend
@@ -6942,7 +6958,7 @@ msgstr "עבור למנהל הדף"
 #. odoo-javascript
 #: code:addons/website/static/src/js/backend/view_hierarchy/view_hierarchy.xml:0
 msgid "Go to View"
-msgstr ""
+msgstr "עבור לתצוגה"
 
 #. module: website
 #. odoo-javascript
@@ -7101,7 +7117,7 @@ msgstr "קבוצות"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_about_personal_s_numbers
 msgid "Growth Rate"
-msgstr ""
+msgstr "קצב צמיחה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features
@@ -7225,7 +7241,6 @@ msgstr "כותרת בגודל גדול"
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/js/editor/snippets.editor.js:0
-#: code:addons/website/static/src/xml/website.editor.xml:0
 msgid "Headings"
 msgstr ""
 
@@ -7235,36 +7250,26 @@ msgid "Headings 1"
 msgstr "כותרות 1"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 2"
 msgstr "כותרות 2"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 3"
 msgstr "כותרות 3"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 4"
 msgstr "כותרות 4"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 5"
 msgstr "כותרות 5"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 6"
 msgstr "כותרות 6"
@@ -7443,7 +7448,7 @@ msgstr "אודיו ביתי"
 #: code:addons/website/static/src/components/views/page_list.xml:0
 #: model_terms:ir.ui.view,arch_db:website.website_pages_kanban_view
 msgid "Home page of the current website"
-msgstr ""
+msgstr "עמוד הבית של האתר הנוכחי"
 
 #. module: website
 #. odoo-javascript
@@ -7811,7 +7816,7 @@ msgstr "כותרת תמונה"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_card_options
 msgid "Image default"
-msgstr ""
+msgstr "ברירת מחדל של תמונה"
 
 #. module: website
 #. odoo-javascript
@@ -7924,7 +7929,7 @@ msgstr "מידע"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Info Page"
-msgstr ""
+msgstr "מידע של עמוד"
 
 #. module: website
 #: model:website.configurator.feature,description:website.feature_page_about_us
@@ -8718,12 +8723,12 @@ msgstr "תאריך צפייה בדף האחרון"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_timeline
 msgid "Latest Feature"
-msgstr ""
+msgstr "תכונה אחרונה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_timeline
 msgid "Latest news"
-msgstr ""
+msgstr "חדשות אחרונות"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_big_icons_subtitles
@@ -8770,7 +8775,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_image_text_box
 msgid "Learn about our offerings"
-msgstr ""
+msgstr "למד על ההצעות שלנו"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_striped
@@ -8822,7 +8827,7 @@ msgstr "תפריט שמאלי"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_blockquote_options
 msgid "Left line"
-msgstr ""
+msgstr "שורה שמאלית"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.footer_custom
@@ -8847,7 +8852,7 @@ msgstr "אפשר ללקוחות שלך להתחבר כדי לראות את המ�
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_process_steps
 msgid "Let your customers understand your process."
-msgstr ""
+msgstr "אפשר ללקוחות שלך להבין את התהליך העסקי שלך."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_title_form
@@ -8958,7 +8963,7 @@ msgstr "טקסט הקישור(לינק)"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_list
 msgid "Link to product"
-msgstr ""
+msgstr "קישור למוצר"
 
 #. module: website
 #. odoo-javascript
@@ -8984,8 +8989,6 @@ msgid "Linkedin"
 msgstr "לינקדאין"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Links"
 msgstr "קישורים"
@@ -9025,7 +9028,7 @@ msgstr ""
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_controller_page__view_id
 msgid "Listing view"
-msgstr ""
+msgstr "תצוגת רשימה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_comparisons
@@ -9060,6 +9063,7 @@ msgstr "יישומון של צ'אט חי(לייב צ'אט)"
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.xml:0
 #: code:addons/website/static/src/components/dialog/add_page_dialog.js:0
 #: code:addons/website/static/src/components/dialog/seo.xml:0
+#: code:addons/website/static/src/js/editor/html_editor.js:0
 #: code:addons/website/static/src/xml/web_editor.xml:0
 #: code:addons/website/static/src/xml/website.background.video.xml:0
 msgid "Loading..."
@@ -9176,7 +9180,7 @@ msgstr "סמן טקסט"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_masonry_block_mosaic_template
 msgid "Mark the difference"
-msgstr ""
+msgstr "ציין את ההבדלים"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -9280,7 +9284,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
 #: model_terms:ir.ui.view,arch_db:website.s_company_team_detail
 msgid "Meet our team"
-msgstr ""
+msgstr "הכר את הצוות שלנו"
 
 #. module: website
 #. odoo-javascript
@@ -9563,7 +9567,7 @@ msgstr "מודלים"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_list
 msgid "Modern"
-msgstr ""
+msgstr "מודרני"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_controller_page__arch_updated
@@ -11193,12 +11197,6 @@ msgid "Primary"
 msgstr "ראשי"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
-msgid "Primary Buttons"
-msgstr ""
-
-#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Primary Style"
 msgstr "סגנון ראשי"
@@ -11238,7 +11236,7 @@ msgstr "מוצר"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team_detail
 msgid "Product Manager"
-msgstr ""
+msgstr "מנהל מוצר"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_image_frame
@@ -11302,7 +11300,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.s_numbers_charts
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar
 msgid "Progress bar"
-msgstr ""
+msgstr "בר התקדמות"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_odoo_menu
@@ -11313,7 +11311,7 @@ msgstr "מקרנים"
 #: model_terms:ir.ui.view,arch_db:website.s_numbers_grid
 #: model_terms:ir.ui.view,arch_db:website.s_numbers_list
 msgid "Projects deployed"
-msgstr ""
+msgstr "פרויקטים שפורסמו"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_menus_logos
@@ -11357,7 +11355,7 @@ msgstr "פרסם"
 #. odoo-javascript
 #: code:addons/website/static/src/components/views/page_list.js:0
 msgid "Publish Website Content"
-msgstr ""
+msgstr "פרסם תוכן אתר אינטרנט"
 
 #. module: website
 #: model:website.configurator.feature,description:website.feature_module_career
@@ -11395,6 +11393,11 @@ msgstr "דופק"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Punchy Image"
+msgstr ""
+
+#. module: website
+#: model:ir.model.fields,field_description:website.field_website__domain_punycode
+msgid "Punycode Domain"
 msgstr ""
 
 #. module: website
@@ -11741,7 +11744,7 @@ msgstr "החלף"
 #. odoo-javascript
 #: code:addons/website/static/src/snippets/s_website_form/000.js:0
 msgid "Replace File"
-msgstr ""
+msgstr " החלף קובץ"
 
 #. module: website
 #: model:ir.ui.menu,name:website.menu_reporting
@@ -11810,7 +11813,7 @@ msgstr "אפס לגרסה הקודמת (איפוס רך)."
 #: model:ir.model.fields,help:website.field_website_published_multi_mixin__website_id
 #: model:ir.model.fields,help:website.field_website_snippet_filter__website_id
 msgid "Restrict to a specific website."
-msgstr ""
+msgstr "הגבל לאתר ספציפי."
 
 #. module: website
 #: model:res.groups,name:website.group_website_restricted_editor
@@ -12099,7 +12102,7 @@ msgstr "חיפוש"
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_landing_2_s_text_block_h2
 #: model_terms:ir.ui.view,arch_db:website.s_searchbar
 msgid "Search Input"
-msgstr ""
+msgstr "קלט חיפוש"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.menu_search
@@ -12184,12 +12187,6 @@ msgid "Secondary"
 msgstr "משני"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
-msgid "Secondary Buttons"
-msgstr ""
-
-#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Secondary Style"
 msgstr "סגנון משני"
@@ -12204,7 +12201,7 @@ msgstr "שניות"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_dynamic_snippet_options_template
 msgid "Section Title"
-msgstr ""
+msgstr "כותר קטע"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_landing_s_showcase
@@ -12226,7 +12223,7 @@ msgstr "הצג הכל <i class=\"fa fa-long-arrow-right ms-2\"/>"
 #: model_terms:ir.ui.view,arch_db:website.s_discovery
 #: model_terms:ir.ui.view,arch_db:website.s_empowerment
 msgid "See more <i class=\"fa fa-long-arrow-right\" role=\"img\"/>"
-msgstr ""
+msgstr "צפה בעוד <i class=\"fa fa-long-arrow-right\" role=\"img\"/>"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_references_grid
@@ -12268,7 +12265,7 @@ msgstr "בחירה"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
 msgid "Selection type"
-msgstr ""
+msgstr "סוג בחירה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_text_cover
@@ -12364,7 +12361,7 @@ msgstr "שירותים"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_image_text_overlap
 msgid "Services we offer"
-msgstr ""
+msgstr "שירותים שאנו מציעים"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.cookie_policy
@@ -12425,7 +12422,7 @@ msgstr "לנער"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Shape image"
-msgstr ""
+msgstr "עצב תמונה"
 
 #. module: website
 #. odoo-javascript
@@ -12521,7 +12518,7 @@ msgstr "הצג את מדיניות reCaptcha"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.view_view_form_extend
 msgid "Show site map"
-msgstr ""
+msgstr "הצגת מפת אתר"
 
 #. module: website
 #. odoo-javascript
@@ -13194,7 +13191,7 @@ msgstr "מודל יעד"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_key_benefits
 msgid "Tax free"
-msgstr ""
+msgstr "ללא מע\"מ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.new_page_template_groups
@@ -13271,8 +13268,6 @@ msgid "Test your robots.txt with Google Search Console"
 msgstr "בדוק את ה-robots.txt שלך עם Google Search Console"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.grid_layout_options
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -13283,7 +13278,7 @@ msgstr "טקסט"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
 msgid "Text - Image"
-msgstr ""
+msgstr "טקסט- תמונה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -13478,6 +13473,12 @@ msgstr "המגבלה היא המספר המרבי של רשומות שאוחזר
 #: code:addons/website/models/website_snippet_filter.py:0
 msgid "The limit must be between 1 and 16."
 msgstr "המגבלה חייבת להיות בין 1 ל-16."
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/client_actions/configurator/configurator.js:0
+msgid "The logo is too large. Please upload a logo smaller than 2.5 MB."
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -14267,6 +14268,12 @@ msgstr ""
 "308 הפנייה מחדש/ שכתוב: אם אתה רוצה לשנות את שם הבקר עם כתובת אתר חדשה. (לדוגמה: \\חנות -> \\גינה - שתי כתובות האתר יהיו נגישות אך \\חנות יופנו אוטומטית אל \\גינה)"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/html_editor.xml:0
+msgid "Type your URL"
+msgstr ""
+
+#. module: website
 #: model:ir.model.fields,field_description:website.field_website_controller_page__name_slugified
 #: model_terms:ir.ui.view,arch_db:website.s_countdown_options
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -14875,7 +14882,7 @@ msgstr "אזהרה"
 #: model:ir.model.fields,field_description:website.field_website_controller_page__warning_info
 #: model:ir.model.fields,field_description:website.field_website_page__warning_info
 msgid "Warning information"
-msgstr ""
+msgstr "מידע אזהרה"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_menus_logos
@@ -15641,12 +15648,6 @@ msgstr ""
 
 #. module: website
 #. odoo-javascript
-#: code:addons/website/static/src/xml/website_form_editor.xml:0
-msgid "Yes"
-msgstr "כן"
-
-#. module: website
-#. odoo-javascript
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.js:0
 msgid ""
 "You are about to be redirected to the domain configured for your website ( "
@@ -15785,7 +15786,7 @@ msgstr "יוטיוב"
 #. odoo-javascript
 #: code:addons/website/static/src/js/send_mail_form.js:0
 msgid "Your Company"
-msgstr "החברה שלך"
+msgstr "שם העסק"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_dynamic_snippet_template
@@ -16220,7 +16221,7 @@ msgstr "לפתח את המותג"
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.js:0
 msgid "e-learning platform"
-msgstr ""
+msgstr "פלטפורמת למידה דיגיטלית "
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_countdown_options
@@ -16591,13 +16592,13 @@ msgstr "של"
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.js:0
 msgid "online appointment system"
-msgstr ""
+msgstr "מערכת זימון אינטרנטית "
 
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.js:0
 msgid "online store"
-msgstr ""
+msgstr "חנות אינטרנטית"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets
@@ -16722,7 +16723,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.js:0
 msgid "recruitment platform"
-msgstr ""
+msgstr "פלטפורמת גיוס"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.searchbar_input_snippet_options

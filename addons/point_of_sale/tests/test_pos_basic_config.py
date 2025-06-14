@@ -1217,3 +1217,44 @@ class TestPoSBasicConfig(TestPoSCommon):
         self.assertFalse(pm_3.journal_id)
         self.assertTrue(pm_4)
         self.assertEqual(pm_4.journal_id.type, "bank")
+
+    def test_loading_products_with_access_right_issue(self):
+        product = self.env['product.product'].create({
+            'name': 'Product with access right issue',
+            'available_in_pos': True,
+            'type': 'consu',
+        })
+
+        self.env['ir.rule'].create({
+            'name': 'Test',
+            'model_id': self.env['ir.model']._get('product.product').id,
+            'domain_force': '[(\'id\', \'!=\', %s)]' % product.id,
+            'groups': [(4, self.env.ref('base.group_user').id)]
+        })
+
+        session = self.open_new_session()
+
+        data = session.load_data([])
+
+        self.assertNotIn(product.id, [p['id'] for p in data['product.product']['data']])
+        self.assertTrue(data['product.product']['data'])
+
+    def test_double_syncing_same_order(self):
+        """ Test that double syncing the same order doesn't create duplicates records
+        """
+        self.open_new_session()
+
+        # Create an order
+        order_data = self.create_ui_order_data([(self.product1, 1)], payments=[(self.cash_pm1, 10)], customer=self.customer, is_invoiced=True)
+        order_data['access_token'] = '0123456789'
+        res = self.env['pos.order'].sync_from_ui([order_data])
+        order_id = res['pos.order'][0]['id']
+
+        # Sync the same order again
+        res = self.env['pos.order'].sync_from_ui([order_data])
+        self.assertEqual(res['pos.order'][0]['id'], order_id, 'Syncing the same order should not create a new one')
+
+        order = self.env['pos.order'].browse(order_id)
+        self.assertEqual(order.picking_count, 1, 'Order should have one picking')
+        self.assertEqual(len(order.payment_ids), 1, 'Order should have one payment')
+        self.assertEqual(self.env['account.move'].search_count([('ref', '=', order.name)]), 1, 'Order should have one invoice')

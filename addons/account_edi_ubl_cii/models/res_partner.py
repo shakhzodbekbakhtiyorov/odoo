@@ -46,7 +46,7 @@ class ResPartner(models.Model):
             ('9914', "Austria UID"),
             ('9915', "Austria VOKZ"),
             ('0208', "Belgian Company Registry"),
-            ('9925', "Belgian VAT number"),
+            ('9925', "Belgian VAT"),
             ('9924', "Bosnia and Herzegovina VAT"),
             ('9926', "Bulgaria VAT"),
             ('9934', "Croatia VAT"),
@@ -118,6 +118,11 @@ class ResPartner(models.Model):
             ('9919', "Kennziffer des Unternehmensregisters"),
             ('9951', "San Marino VAT"),
             ('9953', "Vatican VAT"),
+            ('AN', "O.F.T.P. (ODETTE File Transfer Protocol)"),
+            ('AQ', "X.400 address for mail text"),
+            ('AS', "AS2 exchange"),
+            ('AU', "File Transfer Protocol"),
+            ('EM', "Electronic mail"),
         ]
     )
 
@@ -188,11 +193,6 @@ class ResPartner(models.Model):
         # field dependencies of methods _compute_peppol_endpoint() and _compute_peppol_eas()
         # because we need to extend depends in l10n modules
         return ['country_code', 'vat', 'company_registry']
-
-    @api.depends(lambda self: self._peppol_eas_endpoint_depends())
-    def _compute_invoice_edi_format(self):
-        # EXTENDS 'account' - add depends
-        super()._compute_invoice_edi_format()
 
     @api.depends_context('company')
     @api.depends('invoice_edi_format')
