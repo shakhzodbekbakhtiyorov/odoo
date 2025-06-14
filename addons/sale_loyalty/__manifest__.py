@@ -34,6 +34,7 @@
         'models/sale_order_line.py',
         'models/sale_order.py',
         'models/loyalty_processor.py',
+        'models/loyalty_facade.py',
     ],
     'uninstall_hook': 'uninstall_hook',
     'license': 'LGPL-3',
