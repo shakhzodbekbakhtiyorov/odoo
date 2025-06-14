@@ -59,6 +59,9 @@ This module contains all the common features of Sales Management and eCommerce.
 
         'views/sale_menus.xml',  # Last because referencing actions defined in previous files
     ],
+    'test': [
+        'addons/sale/tests/test_sale_order.py',
+    ],
     'demo': [
         'data/product_demo.xml',
         'data/sale_demo.xml',
