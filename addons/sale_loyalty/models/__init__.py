@@ -8,3 +8,4 @@ from . import sale_order_coupon_points
 from . import sale_order_line
 from . import sale_order
 from . import loyalty_processor
+from . import loyalty_facade
