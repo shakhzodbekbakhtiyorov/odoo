@@ -1,3 +1,5 @@
+from . import test_loyalty_processing
+from . import test_loyalty_point_strategy
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
