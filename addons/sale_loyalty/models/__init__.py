@@ -9,3 +9,4 @@ from . import sale_order_line
 from . import sale_order
 from . import loyalty_processor
 from . import loyalty_facade
+from . import loyalty_point_strategy
