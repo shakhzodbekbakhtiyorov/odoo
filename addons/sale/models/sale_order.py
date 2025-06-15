@@ -1246,10 +1246,11 @@ class SaleOrder(models.Model):
         }
 
     def _action_confirm(self):
-        """ Implementation of additional mechanism of Sales Order confirmation.
-            This method should be extended when the confirmation should generated
-            other documents. In this method, the SO are in 'sale' state (not yet 'done').
-        """
+        self._post_confirm_loyalty()
+        return 
+
+    def _post_confirm_loyalty(self):
+        """Hook for loyalty-related actions after order confirmation."""
         pass
 
     def _send_order_confirmation_mail(self):
@@ -1465,7 +1466,12 @@ class SaleOrder(models.Model):
         }
         if self.journal_id:
             values['journal_id'] = self.journal_id.id
+        values['invoice_line_ids'] += self._prepare_loyalty_invoice_lines()
         return values
+
+    def _prepare_loyalty_invoice_lines(self):
+        """Hook to prepare loyalty-related invoice lines."""
+        return []
 
     def action_view_invoice(self, invoices=False):
         if not invoices:

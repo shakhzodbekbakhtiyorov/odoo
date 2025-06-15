@@ -116,34 +116,39 @@ class SaleOrder(models.Model):
         if reward_lines:
             reward_lines.unlink()
         return new_orders
-
-    def action_confirm(self):
-        """
-        Confirms the sale order and awards loyalty points using LoyaltyFacade.
-        """
+    
+    def _post_confirm_loyalty(self):
+        """Award loyalty points after order confirmation using LoyaltyFacade."""
         for order in self:
             all_coupons = order.applied_coupon_ids | order.coupon_point_ids.coupon_id | order.order_line.coupon_id
             if any(order._get_real_points_for_coupon(coupon) < 0 for coupon in all_coupons):
                 raise ValidationError(_('One or more rewards on the sale order is invalid. Please check them.'))
+            self.env['loyalty.facade'].award_points(order)
+        super()._post_confirm_loyalty()
 
-            # Award points using LoyaltyFacade
-            order.env['loyalty.facade'].award_points(order)
+    def _prepare_loyalty_invoice_lines(self):
+        """Add loyalty discount lines to invoices."""
+        lines = []
+        for line in self.order_line.filtered(lambda l: l.is_reward_line and l.coupon_id):
+            lines.append((0, 0, {
+                'name': line.name,
+                'product_id': line.product_id.id,
+                'price_unit': line.price_unit,
+                'quantity': line.product_uom_qty,
+                'tax_ids': [(6, 0, line.tax_id.ids)],
+                'sale_line_ids': [(6, 0, [line.id])],
+            }))
+        return lines
 
-            # Original logic: call to _update_programs_and_rewards and _add_loyalty_history_lines
-            # order._update_programs_and_rewards()
-            # order._add_loyalty_history_lines()
-
-        # Cleanup unclaimed coupons
+    def action_confirm(self):
+        """Confirms the sale order, with loyalty points handled by _post_confirm_loyalty hook."""
         reward_coupons = self.order_line.coupon_id
         self.coupon_point_ids.filtered(
             lambda pe: pe.coupon_id.program_id.applies_on == 'current' and pe.coupon_id not in reward_coupons
         ).coupon_id.sudo().unlink()
-
-        # Update coupon points
         for coupon, change in self.filtered(lambda s: s.state != 'sale')._get_point_changes().items():
             coupon.points += change
-
-        res = super().action_confirm()
+        res = super(SaleOrder, self).action_confirm()
         self._send_reward_coupon_mail()
         return res
 
@@ -847,41 +852,6 @@ class SaleOrder(models.Model):
             )
         elif reward.discount_mode == 'percent':
             return discountable * (reward.discount / 100)
-
-    def _apply_program_reward(self, reward, coupon, **kwargs):
-        """
-        Applies the reward to the order provided the given coupon has enough points.
-        This method does not check for program rules.
-
-        This method also assumes the points added by the program triggers have already been computed.
-        The temporary points are used if the program is applicable to the current order.
-
-        Returns a dict containing the error message or empty if everything went correctly.
-        NOTE: A call to `_update_programs_and_rewards` is expected to reorder the discounts.
-        """
-        self.ensure_one()
-        # Use the old lines before creating new ones. These should already be in a 'reset' state.
-        old_reward_lines = kwargs.get('old_lines', self.env['sale.order.line'])
-        if reward.is_global_discount:
-            global_discount_reward_lines = self._get_applied_global_discount_lines()
-            global_discount_reward = global_discount_reward_lines.reward_id
-            if (
-                global_discount_reward
-                and global_discount_reward != reward
-                and self._best_global_discount_already_applied(global_discount_reward, reward)
-            ):
-                return {'error': _("A better global discount is already applied.")}
-            elif global_discount_reward and global_discount_reward != reward:
-                # Invalidate the old global discount as it may impact the new discount to apply
-                global_discount_reward_lines._reset_loyalty(True)
-                old_reward_lines |= global_discount_reward_lines
-        if not reward.program_id.is_nominative and reward.program_id.applies_on == 'future' and coupon in self.coupon_point_ids.coupon_id:
-            return {'error': _('The coupon can only be claimed on future orders.')}
-        elif self._get_real_points_for_coupon(coupon) < reward.required_points:
-            return {'error': _('The coupon does not have enough points for the selected reward.')}
-        reward_vals = self._get_reward_line_values(reward, coupon, **kwargs)
-        self._write_vals_from_reward_vals(reward_vals, old_reward_lines)
-        return {}
     
     def _apply_program_reward(self, reward, coupon, **kwargs):
         """
@@ -933,7 +903,7 @@ class SaleOrder(models.Model):
         self._write_vals_from_reward_vals(reward_vals, old_reward_lines)
 
         return {}
-
+    
         # Original logic (commented out for reference)
         """
         reward_vals = self._get_reward_line_values(reward, coupon, **kwargs)
@@ -999,7 +969,6 @@ class SaleOrder(models.Model):
         Retains validation and cleanup for coupons and reward lines.
         """
         self.ensure_one()
-        facade = self.env['loyalty.facade']
 
         # Step 1: Apply nominative programs (e.g., eWallet, loyalty cards)
         if self._allow_nominative_programs():
@@ -1014,10 +983,7 @@ class SaleOrder(models.Model):
             if loyalty_card:
                 self.applied_coupon_ids += loyalty_card
 
-        # Step 2: Award points using LoyaltyFacade
-        facade.award_points(self)
-
-        # Step 3: Cleanup expired coupons and invalid point entries
+        # Step 2: Cleanup expired coupons and invalid point entries
         self.applied_coupon_ids = self.applied_coupon_ids.filtered(lambda c:
             (not c.expiration_date or c.expiration_date >= fields.Date.today())
         )
