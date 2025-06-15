@@ -1,22 +1,21 @@
-from odoo import _, models, api, fields
+from odoo import models, api, fields, _
 from odoo.tools import float_round
 
-class LoyaltyProcessor(models.AbstractModel):
+class LoyaltyProcessor(models.Model):
     _name = 'loyalty.processor'
     _description = 'Loyalty Processor for Point Calculations and Redemption'
 
     @api.model
     def compute_base_points(self, order, program):
-        """Compute base loyalty points based on order total (e.g., 1 point per $10)."""
-        if not program or not order or order.state != 'sale':
+        """Compute base loyalty points based on order subtotal (e.g., 1 point per $10)."""
+        if not program or not order or order.state != 'sale' or not order.order_line:
             return 0.0
-        # Fetch the first applicable rule from program.rule_ids
         rule = program.rule_ids.filtered(lambda r: r.mode == 'auto')[:1]
-        point_rate = rule.reward_point_amount or 0.1  # Default: 1 point per $10
-        point_mode = rule.reward_point_mode or 'money'  # Default: money-based
+        point_rate = rule.reward_point_amount or 0.1
+        point_mode = rule.reward_point_mode or 'money'
         if point_mode == 'money':
             amount_paid = sum(
-                line.price_total
+                line.price_subtotal
                 for line in order.order_line
                 if not line.is_reward_line and not line.combo_item_id
             )
@@ -29,28 +28,29 @@ class LoyaltyProcessor(models.AbstractModel):
     def apply_program_rules(self, order, program):
         """Apply program-specific rules to adjust points (e.g., bonus points)."""
         base_points = self.compute_base_points(order, program)
-        if not base_points:
+        if not base_points or not order.order_line:
             return 0.0
-        # Apply bonus points for trigger products
         if program.trigger_product_ids:
             ordered_products = order.order_line.mapped('product_id')
             if any(product in program.trigger_product_ids for product in ordered_products):
                 rule = program.rule_ids.filtered(lambda r: r.mode == 'auto')[:1]
-                base_points += (rule.reward_point_amount or 0.1) * len(
-                    [line for line in order.order_line if line.product_id in program.trigger_product_ids]
+                bonus_points = 1.0 * sum(  # 1 point per unit for trigger products
+                    line.product_uom_qty
+                    for line in order.order_line
+                    if line.product_id in program.trigger_product_ids
                 )
-        return base_points
+                base_points += bonus_points
+        return float_round(base_points, precision_digits=2, rounding_method='DOWN')
 
     @api.model
     def compute_reward_discount(self, order, program, points_to_redeem):
         """Calculate discount based on redeemed points (e.g., $0.01 per point)."""
         if not program or points_to_redeem <= 0 or not order:
             return 0.0
-        # Fetch the first reward from program.reward_ids
         reward = program.reward_ids.filtered(lambda r: r.reward_type == 'discount')[:1]
-        discount_per_point = reward.discount_fixed or 0.01  # Default: $0.01 per point
+        discount_per_point = reward.discount or 0.01
         max_discount = order.amount_total * (reward.discount_max_amount / 100.0 if reward.discount_max_amount else 1.0)
-        discount = min(points_to_redeem * discount_per_point, max_discount)
+        discount = min(points_to_redeem * discount_per_point, max_discount or order.amount_total)
         return float_round(discount, precision_digits=2, rounding_method='DOWN')
 
     @api.model

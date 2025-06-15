@@ -490,16 +490,23 @@ class SaleOrder(models.Model):
                 )
             order.team_id = cached_teams[key]
 
+    @api.model
+    def _compute_tax_base_lines(self, order_lines, company, currency, special_type=None):
+        """Compute base lines for tax calculations, reusable across methods."""
+        base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
+        if special_type == 'early_payment':
+            base_lines += self._add_base_lines_for_early_payment_discount()
+        self.env['account.tax']._add_tax_details_in_base_lines(base_lines, company)
+        self.env['account.tax']._round_base_lines_tax_details(base_lines, company)
+        return base_lines
+
     @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
     def _compute_amounts(self):
-        AccountTax = self.env['account.tax']
+        """Compute untaxed amount, tax, and total for the sale order."""
         for order in self:
             order_lines = order.order_line.filtered(lambda x: not x.display_type)
-            base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
-            base_lines += order._add_base_lines_for_early_payment_discount()
-            AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
-            AccountTax._round_base_lines_tax_details(base_lines, order.company_id)
-            tax_totals = AccountTax._get_tax_totals_summary(
+            base_lines = self._compute_tax_base_lines(order_lines, order.company_id, order.currency_id)
+            tax_totals = self.env['account.tax']._get_tax_totals_summary(
                 base_lines=base_lines,
                 currency=order.currency_id or order.company_id.currency_id,
                 company=order.company_id,
@@ -507,6 +514,53 @@ class SaleOrder(models.Model):
             order.amount_untaxed = tax_totals['base_amount_currency']
             order.amount_tax = tax_totals['tax_amount_currency']
             order.amount_total = tax_totals['total_amount_currency']
+
+    @api.depends_context('lang')
+    @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
+    def _compute_tax_totals(self):
+        """Compute tax totals for the sale order."""
+        for order in self:
+            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+            base_lines = self._compute_tax_base_lines(order_lines, order.company_id, order.currency_id)
+            order.tax_totals = self.env['account.tax']._get_tax_totals_summary(
+                base_lines=base_lines,
+                currency=order.currency_id or order.company_id.currency_id,
+                company=order.company_id,
+            )
+
+    # @api.depends_context('lang')
+    # @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
+    # def _compute_tax_totals(self):
+    #     AccountTax = self.env['account.tax']
+    #     for order in self:
+    #         order_lines = order.order_line.filtered(lambda x: not x.display_type)
+    #         base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
+    #         base_lines += order._add_base_lines_for_early_payment_discount()
+    #         AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
+    #         AccountTax._round_base_lines_tax_details(base_lines, order.company_id)
+    #         order.tax_totals = AccountTax._get_tax_totals_summary(
+    #             base_lines=base_lines,
+    #             currency=order.currency_id or order.company_id.currency_id,
+    #             company=order.company_id,
+    #         )
+
+    # @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
+    # def _compute_amounts(self):
+    #     AccountTax = self.env['account.tax']
+    #     for order in self:
+    #         order_lines = order.order_line.filtered(lambda x: not x.display_type)
+    #         base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
+    #         base_lines += order._add_base_lines_for_early_payment_discount()
+    #         AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
+    #         AccountTax._round_base_lines_tax_details(base_lines, order.company_id)
+    #         tax_totals = AccountTax._get_tax_totals_summary(
+    #             base_lines=base_lines,
+    #             currency=order.currency_id or order.company_id.currency_id,
+    #             company=order.company_id,
+    #         )
+    #         order.amount_untaxed = tax_totals['base_amount_currency']
+    #         order.amount_tax = tax_totals['tax_amount_currency']
+    #         order.amount_total = tax_totals['total_amount_currency']
 
     def _add_base_lines_for_early_payment_discount(self):
         """
@@ -773,22 +827,6 @@ class SaleOrder(models.Model):
                     order.sudo(),  # ensure access to `credit` & `credit_limit` fields
                     current_amount=(order.amount_total / order.currency_rate),
                 )
-
-    @api.depends_context('lang')
-    @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
-    def _compute_tax_totals(self):
-        AccountTax = self.env['account.tax']
-        for order in self:
-            order_lines = order.order_line.filtered(lambda x: not x.display_type)
-            base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
-            base_lines += order._add_base_lines_for_early_payment_discount()
-            AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
-            AccountTax._round_base_lines_tax_details(base_lines, order.company_id)
-            order.tax_totals = AccountTax._get_tax_totals_summary(
-                base_lines=base_lines,
-                currency=order.currency_id or order.company_id.currency_id,
-                company=order.company_id,
-            )
 
     @api.depends('state')
     def _compute_type_name(self):
